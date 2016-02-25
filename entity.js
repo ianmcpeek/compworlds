@@ -49,13 +49,3 @@ Entity.prototype.collideBottom = function () {
 Entity.prototype.collideTop = function () {
     return this.y - this.radius < 0;
 };
-
-Entity.prototype.collide = function (other) {
-    return distance(this, other) < this.radius + other.radius;
-};
-
-function distance(a, b) {
-    var difX = a.x - b.x;
-    var difY = a.y - b.y;
-    return Math.sqrt(difX * difX + difY * difY);
-}

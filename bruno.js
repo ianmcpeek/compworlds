@@ -15,8 +15,7 @@ Sandwich.prototype.update = function() {
   //check if sandwich hit enemy
   for (var i = 0; i < this.game.entities.length; i++) {
       var ent = this.game.entities[i];
-      if ( ent.entityType && ent.entityTypes[ent.entityType] == "enemy"
-            && this != ent && distance({x:this.worldX, y:this.worldY}, ent) < this.radius + ent.radius) {//Entity.collide.call(this, ent)) {
+      if (this != ent && this.hit({x:this.worldX, y:this.worldY}, ent)) {//Entity.collide.call(this, ent)) {
         ent.health -= 1;
         console.log("enemy hit, health: " + ent.health);
         this.removeFromWorld = true;
@@ -36,6 +35,17 @@ Sandwich.prototype.draw = function() {
     this.spinAnimation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y, this.isleft);
     Entity.prototype.draw.call(this, this.ctx);
 }
+
+Sandwich.prototype.hit = function (loc, ent) {
+  if(ent.entityType && ent.entityTypes[ent.entityType] == "enemy") {
+    //apply radius to x & y to center entity position
+    var difX = (loc.x + this.radius) - (ent.x + ent.radius);
+    var difY = (loc.y + this.radius) - (ent.y + ent.radius);
+    var dist = Math.sqrt(difX * difX + difY * difY);
+    return dist < this.radius + ent.radius;
+  }
+    return false;
+};
 
 function Bruno(game, spritesheet, world) {
     this.animation = new Animation(spritesheet, 0, 0, 80, 80, 0.08, 9, true);
