@@ -24,7 +24,6 @@ AM.queueDownload("./img/student.png");
 AM.queueDownload("./img/mini-boss.png");
 AM.queueDownload("./img/mini-boss2.png");
 AM.queueDownload("./img/mini-boss3.png");
-AM.queueDownload("./img/professor_growler.png");
 
 AM.downloadAll(function () {
     var canvas = document.getElementById("gameWorld");
@@ -45,7 +44,6 @@ AM.downloadAll(function () {
     gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/mini-boss.png"), 653, 3.5, 135, 153, 0.31, 5, true), 1400, 600, 76, false));
     gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/mini-boss2.png"), 653, 3.5, 135, 153, 0.31, 5, true), 3600, 600, 76, false));
     gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/mini-boss3.png"), 653, 3.5, 135, 153, 0.31, 5, true), 5000, 600, 76, false));
-    gameEngine.addEntity(new Boss(gameEngine, background, new Animation(AM.getAsset("./img/professor_growler.png"), 0, 0, 160, 160, 0.5, 3, true), 8000, 600, 80, false));
 
     //items
     gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/avocado.png"), 0));

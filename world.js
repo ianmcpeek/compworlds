@@ -69,6 +69,7 @@ function Platform(game, world, x, y, width, height) {
 Platform.prototype = new Entity();
 
 Platform.prototype.update = function() {
+
 }
 
 Platform.prototype.draw = function() {
