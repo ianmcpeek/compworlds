@@ -5,20 +5,21 @@ function Boss(game, world, animation, x, y, radius, isleft) {
     this.isIdle = false;
     this.isShooting = true;
     this.ground = 700; //temp until a bitmap is used for the map
-    Enemy.call(this, game, world, x, y, radius, isleft);
-    //this.ctx = game.ctx;
+    Entity.call(this, game, world, x, y, radius, 6);
+    this.ctx = game.ctx;
 }
 
-Boss.prototype = new Enemy();
+Boss.prototype = new Entity();
 Boss.prototype.constructor = Boss;
 
 Boss.prototype.update = function () {
-  //if(this.x > this.background.center - 400 && this.x < this.background.center + 400) {
-    //this.visible = true;
-    //console.log("update enemy");
-  //} else this.visible = false;
-  Enemy.prototype.update.call(this);
-    //this.x -= 2;
+  if(this.x === 8000) {
+    this.x -= 2;
+  } else if (this.x === 7000) {
+    this.x += 2;
+  }
+
+  Entity.prototype.update.call(this);
 }
 
 Boss.prototype.draw = function (ctx) {
@@ -26,5 +27,5 @@ Boss.prototype.draw = function (ctx) {
       //console.log("draw enemy");
       this.animation.drawFrame(this.game.clockTick, ctx, this.x - this.world.camera.x * 4, this.y - this.world.camera.y * 4, this.isleft);
   //}
-  Enemy.prototype.draw.call(this, this.ctx);
+  Entity.prototype.draw.call(this, this.ctx);
 }
