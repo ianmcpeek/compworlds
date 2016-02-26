@@ -7,7 +7,7 @@ function Entity(game, world, x, y, radius, type) {
     this.worldPos = null;
     this.centered = false;
     this.radius = radius;
-    this.entityTypes = ["player", "enemy", "projectile", "item", "platform", "Hprojectile"];
+    this.entityTypes = ["player", "enemy", "projectile", "item", "platform", "Hprojectile", "boss"];
     this.entityType = type;
     this.removeFromWorld = false;
 }
