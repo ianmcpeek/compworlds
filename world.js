@@ -77,7 +77,7 @@ Platform.prototype.draw = function() {
 }
 
 Platform.prototype.collideTop = function (ent) {
-    var diffY = Math.abs(ent.y + ent.radius*2 - this.y) <= 1;
+    var diffY = Math.abs(ent.y + ent.radius*2 - this.y) <= 5;
     var diffX = ent.worldX + ent.radius < this.x + this.width && ent.worldX + ent.radius > this.x;
     return diffY && diffX;
 };

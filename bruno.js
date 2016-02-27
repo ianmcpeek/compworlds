@@ -55,12 +55,15 @@ function Bruno(game, spritesheet, world) {
     this.idleAnimation = new Animation(spritesheet, 0, 8, 80, 80, 0.1, 7, false);
     this.throwAnimation = new Animation(spritesheet, 0, 3, 80, 80, 0.1, 8, false);
     this.jumpAnimation = new Animation(spritesheet, 0, 9, 80, 80, 0.1, 12, false);
+    this.fallAnimation = new Animation(spritesheet, 4, 9, 80, 80, 0.1, 7, true);
     this.isleft = false;
     this.isIdle = false;
     this.isThrowing = false;
     this.thrown = false;
     this.idleTimer = 200;
     this.jumping = false;
+    this.falling = false;
+    this.fallVelocity = 0;
     this.ghost;
     this.worldX = 50;
     this.worldY = 670;
@@ -76,6 +79,8 @@ Bruno.prototype.draw = function () {
     //the idle animation is on a timer that resets whenever an action is drawn, or the idle animation is done
     if (this.jumping) {
         this.jumpAnimation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y, this.isleft);
+    } else if(this.falling) {
+      this.fallAnimation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y, this.isleft);
     } else if(this.isThrowing) {
       this.throwAnimation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y, this.isleft);
     } else if(this.isIdle) {
@@ -113,7 +118,7 @@ Bruno.prototype.update = function() {
       this.isIdle = false; this.isleft = true;
     }
     else this.isIdle = true;
-    if (this.game.space && !this.isThrowing) {this.jumping = true; this.isIdle = false;}
+    if (this.game.space && !this.isThrowing && !this.falling) {this.jumping = true; this.isIdle = false;}
     else if(this.game.keyx && !this.isThrowing && !this.jumping) {
       this.isThrowing = true;
       //this.game.addEntity(new Sandwich(this.game, AM.getAsset("./img/sammy1.png"), this.x, this.y, this.isleft));//game, spritesheet, x, isleft
@@ -136,22 +141,37 @@ Bruno.prototype.update = function() {
           var jumpDistance = this.jumpAnimation.elapsedTime / this.jumpAnimation.totalTime;
           var totalHeight = 300;
 
-          if (jumpDistance > 0.5)
-              jumpDistance = 1 - jumpDistance;
+          // if (jumpDistance > 0.5)
+          //     jumpDistance = 1 - jumpDistance;
+          //
+          // //var height = jumpDistance * 2 * totalHeight;
+          //   var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
+          //   this.y = this.ground - height; this.worldY = this.ground - height;
 
-          //var height = jumpDistance * 2 * totalHeight;
-          if(collided && jumpDistance > 0.5) {
-            this.jumping = false; this.jumpAnimation.elapsedTime = 0;
+          if (jumpDistance < 0.5) {
+            //var height = jumpDistance * 2 * totalHeight;
+              var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
+              this.y = (this.ground - this.radius*2) - height; this.worldY = (this.ground - this.radius*2) - height;
           } else {
-            var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
-            this.y = this.ground - height; this.worldY = this.ground - height;
-          }
+            //begin descent
+            //jumpDistance = 1 - jumpDistance;
+            this.falling = true;
+            this.fallVelocity = 0.5;
+            this.jumping = false; this.jumpAnimation.elapsedTime = 0;
+        }
       }
   } else this.isIdle = true;
 
   //precursor to falling animation
-  if(!collided) {this.y += 1; this.worldY += 1;}
-  else {this.ground = this.y; }
+  if(!collided) {
+    if(!this.jumping) {
+      this.y += this.fallVelocity; this.worldY += this.fallVelocity;
+      this.fallVelocity += this.fallVelocity < 4 ? 0.2 : 0;
+      this.falling = true;
+      //this.falling = true;
+    }
+  }
+  else {this.ground = this.y + this.radius*2; this.fallVelocity = 0.5; this.falling = false;}
 
     //check for keys pressed
     //check whether still in animation
