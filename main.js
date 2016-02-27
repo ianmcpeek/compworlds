@@ -24,6 +24,7 @@ AM.queueDownload("./img/student.png");
 AM.queueDownload("./img/mini-boss.png");
 AM.queueDownload("./img/mini-boss2.png");
 AM.queueDownload("./img/mini-boss3.png");
+AM.queueDownload("./img/professor_growler.png");
 
 AM.downloadAll(function () {
     var canvas = document.getElementById("gameWorld");
@@ -64,7 +65,11 @@ AM.downloadAll(function () {
 
     //platforms
     //x:401-590 y:485-540
-    gameEngine.addEntity(new Platform(gameEngine, background, 5825, 485, 190, 55));
+    gameEngine.addPlatform(new Platform(gameEngine, background, 5825, 485, 190, 55));
+    gameEngine.addPlatform(new Platform(gameEngine, background, 0, 760, 11000, 55));
+    gameEngine.addPlatform(new Platform(gameEngine, background, 6085, 361, 630, 55));
+    gameEngine.addPlatform(new Platform(gameEngine, background, 6785, 490, 380, 55));
+    gameEngine.addPlatform(new Platform(gameEngine, background, 8645, 360, 1080, 55));
     console.log("All Done!");
 });
 

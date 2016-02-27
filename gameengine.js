@@ -11,6 +11,7 @@ window.requestAnimFrame = (function () {
 
 function GameEngine() {
     this.entities = [];
+    this.platforms = [];
     this.ctx = null;
     this.debug = true;
     this.surfaceWidth = null;
@@ -39,6 +40,17 @@ GameEngine.prototype.startInput = function () {
     console.log('Starting input');
     var that = this;
 
+    this.ctx.canvas.addEventListener("mousedown", function (e) {
+        var x = e.x;
+        var y = e.y;
+
+        x -= that.ctx.canvas.offsetLeft;
+        y -= that.ctx.canvas.offsetTop;
+
+        console.log("x:" + x + " y:" + y);
+        //x:401-590 y:485-540
+    }, false);
+
     this.ctx.canvas.addEventListener("keydown", function (e) {
         if (String.fromCharCode(e.which) === '\'') that.keyright = true;
         else if (String.fromCharCode(e.which) === '%') that.keyleft = true;
@@ -63,11 +75,20 @@ GameEngine.prototype.addEntity = function (entity) {
     this.entities.push(entity);
 }
 
+GameEngine.prototype.addPlatform = function (platform) {
+    console.log('added platform');
+    this.platforms.push(platform);
+}
+
 GameEngine.prototype.draw = function () {
     this.ctx.clearRect(0, 0, this.surfaceWidth, this.surfaceHeight);
     this.ctx.save();
     for (var i = 0; i < this.entities.length; i++) {
         this.entities[i].draw(this.ctx);
+    }
+    //draw platform outlines
+    for (var i = 0; i < this.platforms.length; i++) {
+        this.platforms[i].draw(this.ctx);
     }
     this.ctx.restore();
 }

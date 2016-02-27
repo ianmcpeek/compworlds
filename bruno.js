@@ -39,9 +39,12 @@ Sandwich.prototype.draw = function() {
 Sandwich.prototype.hit = function (loc, ent) {
   if(ent.entityType && ent.entityTypes[ent.entityType] == "enemy") {
     //apply radius to x & y to center entity position
-    var difX = (loc.x + this.radius) - (ent.x + ent.radius);
+    //temp workaround
+    var difX = (loc.x + this.radius) - ((ent.x  - this.world.camera.x*4) + ent.radius);
     var difY = (loc.y + this.radius) - (ent.y + ent.radius);
     var dist = Math.sqrt(difX * difX + difY * difY);
+    //debugging
+    var rad = this.radius + ent.radius
     return dist < this.radius + ent.radius;
   }
     return false;
@@ -61,7 +64,7 @@ function Bruno(game, spritesheet, world) {
     this.ghost;
     this.worldX = 50;
     this.worldY = 670;
-    this.ground = 670;//used for jumping
+    this.ground = 750;//used for jumping
     this.ctx = game.ctx;
     Entity.call(this, game, world, 50, 670, 40, 0);
 }
@@ -91,6 +94,13 @@ Bruno.prototype.draw = function () {
 }
 
 Bruno.prototype.update = function() {
+  //falling code
+  var collided = false;
+  for(var i = 0; i < this.game.platforms.length; i++) {
+    var platform = this.game.platforms[i];
+    if(platform.collideTop(this)) {collided = true; break;}
+  }
+
   if (this.x < 800 && this.x > -1) {
     if(this.game.keyright) {
       if(this.x >= 400 && this.world.camera.x + 800 < this.world.worldEnds.right ) {this.world.camera.x += 1; this.worldX += 4;}
@@ -130,10 +140,19 @@ Bruno.prototype.update = function() {
               jumpDistance = 1 - jumpDistance;
 
           //var height = jumpDistance * 2 * totalHeight;
-          var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
-          this.y = this.ground - height;
+          if(collided && jumpDistance > 0.5) {
+            this.jumping = false; this.jumpAnimation.elapsedTime = 0;
+          } else {
+            var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
+            this.y = this.ground - height; this.worldY = this.ground - height;
+          }
       }
   } else this.isIdle = true;
+
+  //precursor to falling animation
+  if(!collided) {this.y += 1; this.worldY += 1;}
+  else {this.ground = this.y; }
+
     //check for keys pressed
     //check whether still in animation
     //if no keys pressed return to idle

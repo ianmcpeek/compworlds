@@ -4,10 +4,11 @@ function Entity(game, world, x, y, radius, type) {
     this.world = world;
     this.x = x;
     this.y = y;
-    this.worldPos = null;
+    this.worldX = x;
+    this.worldY = y;
     this.centered = false;
     this.radius = radius;
-    this.entityTypes = ["player", "enemy", "projectile", "item", "platform", "Hprojectile", "boss"];
+    this.entityTypes = ["player", "enemy", "projectile", "item", "platform", "Hprojectile", "boss", "stair"];
     this.entityType = type;
     this.removeFromWorld = false;
 }
@@ -29,6 +30,17 @@ Entity.prototype.draw = function (ctx) {
     }
 };
 
+// Sandwich.prototype.collide = function (ent, loc) {
+//   if(ent.entityType && ent.entityTypes[ent.entityType] == "enemy") {
+//     //apply radius to x & y to center entity position
+//     var difX = (loc.x + this.radius) - (ent.x + ent.radius);
+//     var difY = (loc.y + this.radius) - (ent.y + ent.radius);
+//     var dist = Math.sqrst(difX * difX + difY * difY);
+//     return dist < this.radius + ent.radius;
+//   }
+//     return false;
+// };
+
 // Entity.prototype.onScreen = function () {
 //   return (this.x < this.world.center + 400 && this.x > this.world.center - 400)
 //       && (this.y < this.world.center + 400 && this.y > this.world.center - 400);
@@ -37,15 +49,15 @@ Entity.prototype.draw = function (ctx) {
 //Entity.prototype = new Entity();
 //Entity.prototype.constructor = Entity;
 
-Entity.prototype.collideRight = function () {
-    return this.x + this.radius > 1600;
-};
-Entity.prototype.collideLeft = function () {
-    return this.x - this.radius < 0;
-};
-Entity.prototype.collideBottom = function () {
-    return this.y + this.radius > 1600;
-};
-Entity.prototype.collideTop = function () {
-    return this.y - this.radius < 0;
-};
+// Entity.prototype.collideRight = function () {
+//     return this.x + this.radius > 1600;
+// };
+// Entity.prototype.collideLeft = function () {
+//     return this.x - this.radius < 0;
+// };
+// Entity.prototype.collideBottom = function () {
+//     return this.y + this.radius > 1600;
+// };
+// Entity.prototype.collideTop = function (ent) {
+//     return ent.y == this.y  + && ent.x < this.x + this.radius*2 && this.y > this.x;
+// };

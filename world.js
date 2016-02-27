@@ -62,12 +62,12 @@ function Platform(game, world, x, y, width, height) {
   this.game = game;
   this.world = world;
   //function Entity(game, world, x, y, radius, type)
-  //Entity.call(game, x, y, width,4);
+  Entity.call(game, x, y, width,4);
 
 }
 
-Platform.prototype = new Entity();
 
+Platform.prototype = new Entity();
 Platform.prototype.update = function() {
 
 }
@@ -75,3 +75,9 @@ Platform.prototype.update = function() {
 Platform.prototype.draw = function() {
   this.game.ctx.strokeRect(this.x - this.world.camera.x * 4, this.y - this.world.camera.y * 4, this.width, this.height);
 }
+
+Platform.prototype.collideTop = function (ent) {
+    var diffY = Math.abs(ent.y + ent.radius*2 - this.y) <= 1;
+    var diffX = ent.worldX + ent.radius < this.x + this.width && ent.worldX + ent.radius > this.x;
+    return diffY && diffX;
+};
