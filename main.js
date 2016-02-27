@@ -36,8 +36,8 @@ AM.downloadAll(function () {
     //set up level
     var background = new Background(gameEngine, AM.getAsset("./img/castlevania_background.png"));
     gameEngine.addEntity(background);
-    gameEngine.addEntity(new Bruno(gameEngine, AM.getAsset("./img/bruno.png"), background));
-    gameEngine.addEntity(new Hud(gameEngine, AM.getAsset("./img/brainz.png"), 3));
+    gameEngine.addPlayer(new Bruno(gameEngine, AM.getAsset("./img/bruno.png"), background));
+    gameEngine.addHud(new Hud(gameEngine, AM.getAsset("./img/brainz.png"), 3));
 
     //enemies
     gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/pug.png"), 0, 0, 80, 62, 0.2, 5, true), 300, 700, 40, false));
