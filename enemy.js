@@ -1,9 +1,11 @@
 
-function Enemy(game, world, animation, x, y, radius, isleft) {
+function Enemy(game, world, animation, x, y, radius, enemyType, isleft) {
     this.animation = animation;
     this.isleft = isleft;
     this.isIdle = false;
     this.isShooting = false;
+    this.enemyTypes = ["pug", "student", "teacher", "miniboss"];
+    this.enemyType = enemyType;
     this.ground = 700; //temp until a bitmap is used for the map
     this.timer = 50;
     Entity.call(this, game, world, x, y, radius, 1);
@@ -18,6 +20,17 @@ Enemy.prototype.update = function () {
     //this.visible = true;
     //console.log("update enemy");
   //} else this.visible = false;
+  //this.x -= 2;
+  //pug
+  if(this.enemyTypes[this.enemyType] == "pug") {
+    this.pugUpdate();
+  } else if(this.enemyTypes[this.enemyType] == "student") {
+    this.studentUpdate();
+  }
+  //student
+  //teacher
+  //mini-boss
+
   if(this.timer > 0) {
     this.timer -= 1;
   } else {
@@ -28,7 +41,6 @@ Enemy.prototype.update = function () {
     }
   }
   Entity.prototype.update.call(this);
-    //this.x -= 2;
 }
 
 Enemy.prototype.draw = function (ctx) {
@@ -52,3 +64,23 @@ Enemy.prototype.collide = function (ent) {
   }
     return false;
 };
+
+Enemy.prototype.pugUpdate = function() {
+  this.x -= 4;
+}
+
+Enemy.prototype.studentUpdate = function() {
+  //initialize timers
+  if(!this.idleTimer && !this.walkTimer) {
+    console.log("student not set");
+    this.idleTimer = 30; this.walkTimer = 80;
+    this.isleft = !this.isleft;
+  }
+  if(this.walkTimer > 0) {
+    var dir = this.isleft ? -1 : 1;
+    this.x += 2*dir;
+    this.walkTimer -= 1;
+  } else if(this.idleTimer > 0) {
+    this.idleTimer -= 1;
+  } 
+}

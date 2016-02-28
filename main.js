@@ -40,11 +40,11 @@ AM.downloadAll(function () {
     gameEngine.addHud(new Hud(gameEngine, AM.getAsset("./img/brainz.png"), 3));
 
     //enemies
-    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/pug.png"), 0, 0, 80, 62, 0.2, 5, true), 300, 700, 40, false));
-    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/student.png"), 0, 0, 39, 64, 0.2, 6, true), 1000, 700, 20, true));
-    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/mini-boss.png"), 653, 3.5, 135, 153, 0.31, 5, true), 1400, 600, 76, false));
-    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/mini-boss2.png"), 653, 3.5, 135, 153, 0.31, 5, true), 3600, 600, 76, false));
-    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/mini-boss3.png"), 653, 3.5, 135, 153, 0.31, 5, true), 5000, 600, 76, false));
+    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/pug.png"), 0, 0, 80, 62, 0.2, 5, true), 300, 500, 40, 0, false));
+    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/student.png"), 0, 0, 39, 64, 0.2, 6, true), 1000, 700, 20, 1, true));
+    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/mini-boss.png"), 653, 3.5, 135, 153, 0.31, 5, true), 1400, 600, 76, 3, false));
+    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/mini-boss2.png"), 653, 3.5, 135, 153, 0.31, 5, true), 3600, 600, 76, 3, false));
+    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/mini-boss3.png"), 653, 3.5, 135, 153, 0.31, 5, true), 5000, 600, 76, 3, false));
     gameEngine.addEntity(new Boss(gameEngine, background, AM.getAsset("./img/professor_growler.png"), 4000, 600, 80, true));
 
     //items
