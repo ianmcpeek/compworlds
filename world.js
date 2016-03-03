@@ -84,3 +84,21 @@ Platform.prototype.collideTop = function (ent) {
     var diffX = ent.worldX + ent.radius < this.x + this.width && ent.worldX + ent.radius > this.x;
     return diffY && diffX;
 };
+
+Platform.prototype.collideBottom = function (ent) {
+    var diffY = Math.abs(ent.y  - (this.y + this.height)) <= 5;
+    var diffX = ent.worldX + ent.radius < this.x + this.width && ent.worldX + ent.radius > this.x;
+    return diffY && diffX;
+};
+
+Platform.prototype.collideRight = function (ent) {
+  var diffY = ent.worldY + ent.radius < this.y + this.height && ent.worldY + ent.radius > this.y;
+  var diffX = ent.worldX < this.x && ent.worldX + ent.radius*2 > this.x;
+  return diffY && diffX;
+};
+
+Platform.prototype.collideLeft = function (ent) {
+  var diffY = ent.worldY + ent.radius < this.y + this.height && ent.worldY + ent.radius > this.y;
+  var diffX = ent.worldX < this.x + this.width && ent.worldX + ent.radius*2 > this.x + this.width;
+  return diffY && diffX;
+};

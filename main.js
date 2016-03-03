@@ -74,7 +74,7 @@ AM.downloadAll(function () {
     //platforms
 
     gameEngine.addPlatform(new Platform(gameEngine, background, 0, 760, 11000, 55));
-    gameEngine.addPlatform(new Platform(gameEngine, background, 5825, 485, 190, 55));
+    gameEngine.addPlatform(new Platform(gameEngine, background, 5825, 490, 190, 55));
     gameEngine.addPlatform(new Platform(gameEngine, background, 6085, 361, 630, 55));
     gameEngine.addPlatform(new Platform(gameEngine, background, 6785, 490, 380, 55));
     gameEngine.addPlatform(new Platform(gameEngine, background, 8645, 360, 1080, 55));

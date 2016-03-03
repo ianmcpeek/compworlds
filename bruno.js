@@ -102,13 +102,27 @@ Bruno.prototype.draw = function () {
 Bruno.prototype.update = function() {
 
   if (this.x < 800 && this.x > -1) {
+
+    //collision code
+    var collidedTop = false;
+    var collidedBottom = false;
+    var collidedLeft = false;
+    var collidedRight = false;
+    for(var i = 0; i < this.game.platforms.length; i++) {
+      var platform = this.game.platforms[i];
+      if(platform.collideRight(this)) collidedRight = true;
+      else if(platform.collideLeft(this)) collidedLeft = true;
+      if(platform.collideTop(this)) collidedTop = true;
+      else if(platform.collideBottom(this)) collidedBottom = true;
+    }
+
     this.isIdle = true;
-    if(this.game.keyright) {
+    if(this.game.keyright && !collidedRight) {
       if(this.x >= 400 && this.world.camera.x + 800 < this.world.worldEnds.right ) {this.world.camera.x += 1; this.worldX += 4;}
       else {this.x += 4; this.worldX += 4;}
       this.isIdle = false; this.isleft = false;
     }
-    else if(this.game.keyleft) {
+    else if(this.game.keyleft && !collidedLeft) {
       if(this.x <= 400 && this.world.camera.x > this.world.worldEnds.left ) {this.world.camera.x -= 1; this.worldX -= 4;}
       else {this.x -= 4; this.worldX -= 4;}
       this.isIdle = false; this.isleft = true;
@@ -140,7 +154,8 @@ Bruno.prototype.update = function() {
         if (jumpDistance < 0.5) {
           //var height = jumpDistance * 2 * totalHeight;
             var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
-            this.y = (this.ground - this.radius*2) - height; this.worldY = (this.ground - this.radius*2) - height;
+            if(collidedBottom) {this.jumpAnimation.elapsedTime = 0; this.jumping = false;}
+            else  this.y = (this.ground - this.radius*2) - height; this.worldY = (this.ground - this.radius*2) - height;
         } else {
           //begin descent
           //jumpDistance = 1 - jumpDistance;
@@ -151,14 +166,7 @@ Bruno.prototype.update = function() {
     }
 
   //falling code
-  var collided = false;
-  for(var i = 0; i < this.game.platforms.length; i++) {
-    var platform = this.game.platforms[i];
-    if(platform.collideTop(this)) {collided = true; break;}
-  }
-
-  //precursor to falling animation
-  if(!collided) {
+  if(!collidedTop) {
     if(!this.jumping) {
       this.y += this.fallVelocity; this.worldY += this.fallVelocity;
       this.fallVelocity += this.fallVelocity < 4 ? 0.2 : 0;
