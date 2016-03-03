@@ -29,8 +29,39 @@ GameEngine.prototype.init = function (ctx) {
     console.log('game initialized');
 }
 
+GameEngine.prototype.titleScreen = function() {
+  this.title_song = new Howl({urls: ["hotlinebling.mp3"], loop: true});
+  this.title_song.play();
+  this.ctx.drawImage(AM.getAsset("./img/title.png"),
+                 0, 0,  // source from sheet
+                 800, 800,
+                 0, 0,
+                 800, 800);
+  this.started = false;
+
+  var that = this;
+
+  this.ctx.canvas.addEventListener("mousedown", function (e) {
+      var x = e.x;
+      var y = e.y;
+
+      x -= that.ctx.canvas.offsetLeft;
+      y -= that.ctx.canvas.offsetTop;
+
+      console.log("x:" + x + " y:" + y);
+      //x:401-590 y:485-540
+      if(!that.started) {
+        that.start(); that.title_song.stop(); that.started = true;
+      }
+  }, false);
+}
+
 GameEngine.prototype.start = function () {
     console.log("starting game");
+    //start level song
+    this.level_song = new Howl({urls: ["xgon'giveittoyou.mp3"], loop: true});
+    this.level_song.play();
+
     var that = this;
     (function gameLoop() {
         that.loop();
@@ -41,17 +72,6 @@ GameEngine.prototype.start = function () {
 GameEngine.prototype.startInput = function () {
     console.log('Starting input');
     var that = this;
-
-    this.ctx.canvas.addEventListener("mousedown", function (e) {
-        var x = e.x;
-        var y = e.y;
-
-        x -= that.ctx.canvas.offsetLeft;
-        y -= that.ctx.canvas.offsetTop;
-
-        console.log("x:" + x + " y:" + y);
-        //x:401-590 y:485-540
-    }, false);
 
     this.ctx.canvas.addEventListener("keydown", function (e) {
         if (String.fromCharCode(e.which) === '\'') that.keyright = true;

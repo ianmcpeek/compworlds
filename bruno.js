@@ -77,12 +77,12 @@ Bruno.prototype.constructor = Bruno;
 
 Bruno.prototype.draw = function () {
     //the idle animation is on a timer that resets whenever an action is drawn, or the idle animation is done
-    if (this.jumping) {
+    if(this.isThrowing) {
+      this.throwAnimation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y, this.isleft);
+    } else if (this.jumping) {
         this.jumpAnimation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y, this.isleft);
     } else if(this.falling) {
       this.fallAnimation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y, this.isleft);
-    } else if(this.isThrowing) {
-      this.throwAnimation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y, this.isleft);
     } else if(this.isIdle) {
         if(this.idleTimer === 0) {
             this.idleAnimation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y, this.isleft);
@@ -99,12 +99,6 @@ Bruno.prototype.draw = function () {
 }
 
 Bruno.prototype.update = function() {
-  //falling code
-  var collided = false;
-  for(var i = 0; i < this.game.platforms.length; i++) {
-    var platform = this.game.platforms[i];
-    if(platform.collideTop(this)) {collided = true; break;}
-  }
 
   if (this.x < 800 && this.x > -1) {
     if(this.game.keyright) {
@@ -119,7 +113,7 @@ Bruno.prototype.update = function() {
     }
     else this.isIdle = true;
     if (this.game.space && !this.isThrowing && !this.falling) {this.jumping = true; this.isIdle = false;}
-    else if(this.game.keyx && !this.isThrowing && !this.jumping) {
+    else if(this.game.keyx && !this.isThrowing) {
       this.isThrowing = true;
       //this.game.addEntity(new Sandwich(this.game, AM.getAsset("./img/sammy1.png"), this.x, this.y, this.isleft));//game, spritesheet, x, isleft
       this.isIdle = false;}
@@ -162,6 +156,13 @@ Bruno.prototype.update = function() {
       }
   } else this.isIdle = true;
 
+  //falling code
+  var collided = false;
+  for(var i = 0; i < this.game.platforms.length; i++) {
+    var platform = this.game.platforms[i];
+    if(platform.collideTop(this)) {collided = true; break;}
+  }
+
   //precursor to falling animation
   if(!collided) {
     if(!this.jumping) {
@@ -171,7 +172,8 @@ Bruno.prototype.update = function() {
       //this.falling = true;
     }
   }
-  else {this.ground = this.y + this.radius*2; this.fallVelocity = 0.5; this.falling = false;}
+  else {
+    if (!this.jumping)this.ground = this.y + this.radius*2; this.fallVelocity = 0.5; this.falling = false;}
 
     //check for keys pressed
     //check whether still in animation

@@ -72,7 +72,7 @@ Enemy.prototype.pugUpdate = function() {
 Enemy.prototype.studentUpdate = function() {
   //initialize timers
   if(!this.idleTimer && !this.walkTimer) {
-    console.log("student not set");
+    //console.log("student not set");
     this.idleTimer = 30; this.walkTimer = 80;
     this.isleft = !this.isleft;
   }
@@ -82,5 +82,5 @@ Enemy.prototype.studentUpdate = function() {
     this.walkTimer -= 1;
   } else if(this.idleTimer > 0) {
     this.idleTimer -= 1;
-  } 
+  }
 }

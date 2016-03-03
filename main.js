@@ -1,5 +1,7 @@
 var AM = new AssetManager();
 
+AM.queueDownload("./img/title.png");
+
 AM.queueDownload("./img/castlevania_background.png");
 AM.queueDownload("./img/bruno.png");
 AM.queueDownload("./img/sammy1.png");
@@ -29,10 +31,9 @@ AM.queueDownload("./img/professor_growler.png");
 AM.downloadAll(function () {
     var canvas = document.getElementById("gameWorld");
     var ctx = canvas.getContext("2d");
-
     var gameEngine = new GameEngine();
     gameEngine.init(ctx);
-    gameEngine.start();
+
     //set up level
     var background = new Background(gameEngine, AM.getAsset("./img/castlevania_background.png"));
     gameEngine.addEntity(background);
@@ -71,6 +72,7 @@ AM.downloadAll(function () {
     gameEngine.addPlatform(new Platform(gameEngine, background, 6785, 490, 380, 55));
     gameEngine.addPlatform(new Platform(gameEngine, background, 8645, 360, 1080, 55));
     console.log("All Done!");
+    gameEngine.titleScreen();
 });
 
 function Animation(spriteSheet, startX, startY, frameWidth, frameHeight, frameDuration, frames, loop) {
