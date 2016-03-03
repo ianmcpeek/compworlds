@@ -1,9 +1,7 @@
 
 //look for how to find class type
-function Sandwich(game, world, spritesheet, x, y, worldX, worldY, isleft) {
+function Sandwich(game, world, spritesheet, x, y, isleft) {
   this.spinAnimation = new Animation(spritesheet, 0, 0, 32, 32, 0.08, 5, true);
-  this.worldX = worldX;
-  this.worldY = worldY;
   this.isleft = isleft;
   this.ctx = game.ctx;
   Entity.call(this, game, world, x, y+30, 16, 5);
@@ -12,36 +10,39 @@ function Sandwich(game, world, spritesheet, x, y, worldX, worldY, isleft) {
 Sandwich.prototype = new Entity();
 
 Sandwich.prototype.update = function() {
+  //check if went offscreen
+  if(Entity.prototype.offScreen.call(this)) {
+    this.removeFromWorld = true;
+    console.log("off screen sandwich!");
+  }
   //check if sandwich hit enemy
   for (var i = 0; i < this.game.entities.length; i++) {
       var ent = this.game.entities[i];
-      if (this != ent && this.hit({x:this.worldX, y:this.worldY}, ent)) {//Entity.collide.call(this, ent)) {
+      if (this != ent && this.hit(ent)) {
         ent.health -= 1;
         console.log("enemy hit, health: " + ent.health);
         this.removeFromWorld = true;
       }
   }
 
-  if (this.x < 800 && this.x > -32) {
-    if(this.isleft) {
-      this.x -= 4; this.worldX -= 4;
-    } else {
-      this.x += 4; this.worldX += 4;
-    }
+  if(this.isleft) {
+    this.x -= 6;
+  } else {
+    this.x += 6;
   }
 }
 
 Sandwich.prototype.draw = function() {
-    this.spinAnimation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y, this.isleft);
+    this.spinAnimation.drawFrame(this.game.clockTick, this.ctx, this.x - this.world.camera.x*4, this.y - this.world.camera.y*4, this.isleft);
     Entity.prototype.draw.call(this, this.ctx);
 }
 
-Sandwich.prototype.hit = function (loc, ent) {
+Sandwich.prototype.hit = function (ent) {
   if(ent.entityType && ent.entityTypes[ent.entityType] == "enemy") {
     //apply radius to x & y to center entity position
     //temp workaround
-    var difX = (loc.x + this.radius) - ((ent.x  - this.world.camera.x*4) + ent.radius);
-    var difY = (loc.y + this.radius) - (ent.y + ent.radius);
+    var difX = ((this.x + this.radius) - this.world.camera.x*4) - ((ent.x  - this.world.camera.x*4) + ent.radius);
+    var difY = (this.y + this.radius) - (ent.y + ent.radius);
     var dist = Math.sqrt(difX * difX + difY * difY);
     //debugging
     var rad = this.radius + ent.radius
@@ -69,6 +70,12 @@ function Bruno(game, spritesheet, world) {
     this.worldY = 670;
     this.ground = 750;//used for jumping
     this.ctx = game.ctx;
+
+    //used for movement Up (ketchup)
+    this.speedTimer = 0;
+    this.speed = 4;
+    this.worldSpeed = this.speed / 4;
+
     Entity.call(this, game, world, 50, 670, 40, 0);
 }
 
@@ -101,7 +108,7 @@ Bruno.prototype.draw = function () {
 
 Bruno.prototype.update = function() {
 
-  if (this.x < 800 && this.x > -1) {
+    //refactor into entity so collide can be added to enemies & projectiles
 
     //collision code
     var collidedTop = false;
@@ -117,17 +124,19 @@ Bruno.prototype.update = function() {
     }
 
     this.isIdle = true;
+
+    //move right
     if(this.game.keyright && !collidedRight) {
-      if(this.x >= 400 && this.world.camera.x + 800 < this.world.worldEnds.right ) {this.world.camera.x += 1; this.worldX += 4;}
-      else {this.x += 4; this.worldX += 4;}
-      this.isIdle = false; this.isleft = false;
+      this.isleft = false;
+      this.updateXSpeed(1);
     }
+    //move left
     else if(this.game.keyleft && !collidedLeft) {
-      if(this.x <= 400 && this.world.camera.x > this.world.worldEnds.left ) {this.world.camera.x -= 1; this.worldX -= 4;}
-      else {this.x -= 4; this.worldX -= 4;}
-      this.isIdle = false; this.isleft = true;
+      this.isleft = true;
+      this.updateXSpeed(-1);
     }
-    if (this.game.space && !this.isThrowing && !this.falling) {this.jumping = true; this.isIdle = false; console.log("x: " + this.worldX);}
+    if (this.game.space && !this.isThrowing && !this.falling) {this.jumping = true; this.isIdle = false; console.log("x: " + this.worldX);
+  console.log("world camera x: " + this.world.camera.x);}
     else if(this.game.keyx && !this.isThrowing) {
       this.isThrowing = true;
       //this.game.addEntity(new Sandwich(this.game, AM.getAsset("./img/sammy1.png"), this.x, this.y, this.isleft));//game, spritesheet, x, isleft
@@ -135,7 +144,7 @@ Bruno.prototype.update = function() {
 
     if(this.isThrowing) {
         if(this.throwAnimation.currentFrame() === 3 && !this.thrown) {
-          this.game.addEntity(new Sandwich(this.game, this.world, AM.getAsset("./img/sammy1.png"), this.x, this.y, this.worldX, this.worldY, this.isleft));
+          this.game.addEntity(new Sandwich(this.game, this.world, AM.getAsset("./img/sammy1.png"), this.worldX, this.worldY, this.isleft));
           this.thrown = true;
         }
         if(this.throwAnimation.isDone()) {
@@ -158,7 +167,6 @@ Bruno.prototype.update = function() {
             else  this.y = (this.ground - this.radius*2) - height; this.worldY = (this.ground - this.radius*2) - height;
         } else {
           //begin descent
-          //jumpDistance = 1 - jumpDistance;
           this.falling = true;
           this.fallVelocity = 0.5;
           this.jumping = false; this.jumpAnimation.elapsedTime = 0;
@@ -171,13 +179,33 @@ Bruno.prototype.update = function() {
       this.y += this.fallVelocity; this.worldY += this.fallVelocity;
       this.fallVelocity += this.fallVelocity < 4 ? 0.2 : 0;
       this.falling = true;
-      //this.falling = true;
     }
   }
   else {
-    if (!this.jumping)this.ground = this.y + this.radius*2; this.fallVelocity = 0.5; this.falling = false;}
+    if (!this.jumping)this.ground = this.y + this.radius*2; this.fallVelocity = 0.5; this.falling = false;
   }
-    //check for keys pressed
-    //check whether still in animation
-    //if no keys pressed return to idle
 }
+
+Bruno.prototype.updateXSpeed = function (dir) {
+  var speedUp = 0; // set in relation to world speed
+  if (this.speedTimer > 0) {
+    speedUp = this.speed / 2;
+    this.speedTimer -= 1;
+  }
+  if(this.isCentered()) {
+    this.world.camera.x += (this.worldSpeed + (speedUp/4))*dir; //ratio of speed to world speed;
+    this.worldX += (this.speed + (speedUp))*dir;
+  } else {
+    this.x += (this.speed + speedUp)*dir;
+    this.worldX += (this.speed + speedUp)*dir;;
+  }
+  this.isIdle = false;
+};
+
+Bruno.prototype.isCentered = function() {
+  if(this.isleft) {
+    return (this.x <= 400 && this.world.camera.x > this.world.worldEnds.left);
+  }else {
+    return (this.x >= 400 && this.world.camera.x + 800 < this.world.worldEnds.right );
+  }
+};

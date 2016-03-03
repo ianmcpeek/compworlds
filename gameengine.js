@@ -15,7 +15,7 @@ function GameEngine() {
     this.player = null;
     this.hud = null;
     this.ctx = null;
-    this.debug = true;
+    this.debug = false;
     this.surfaceWidth = null;
     this.surfaceHeight = null;
 }
@@ -24,7 +24,6 @@ GameEngine.prototype.init = function (ctx) {
     this.ctx = ctx;
     this.surfaceWidth = this.ctx.canvas.width;
     this.surfaceHeight = this.ctx.canvas.height;
-    this.startInput();
     this.timer = new Timer();
     console.log('game initialized');
 }
@@ -61,6 +60,7 @@ GameEngine.prototype.start = function () {
     //start level song
     this.level_song = new Howl({urls: ["./sounds/codemonkey.mp3"], loop: true});
     this.level_song.play();
+    this.startInput();
 
     var that = this;
     (function gameLoop() {
@@ -120,9 +120,9 @@ GameEngine.prototype.draw = function () {
         this.entities[i].draw(this.ctx);
     }
     //draw platform outlines
-    for (var i = 0; i < this.platforms.length; i++) {
-        this.platforms[i].draw(this.ctx);
-    }
+    // for (var i = 0; i < this.platforms.length; i++) {
+    //     this.platforms[i].draw(this.ctx);
+    // }
 
     if(this.player) this.player.draw(this.ctx);
     if(this.hud) this.hud.draw(this.ctx);

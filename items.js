@@ -8,6 +8,10 @@ Item.prototype = new Entity();
 Item.prototype.constructor = Item;
 
 Item.prototype.update = function () {
+  if(this.collide(this.game.player)) {
+    this.game.hud.healthUp(2);
+    this.removeFromWorld = true;
+  }
 	var bounceDistance = this.bounceAnimation.elapsedTime / this.bounceAnimation.totalTime;
     var totalHeight = 20;
 
@@ -21,3 +25,17 @@ Item.prototype.draw = function (ctx) {
   //}
   Entity.prototype.draw.call(this, this.ctx);
 }
+
+Item.prototype.collide = function (ent) {
+  if(this.game.player) {
+    //apply radius to x & y to center entity position
+    //temp workaround
+    var difX = ((this.x - this.world.camera.x * 4) + this.radius) - ((ent.worldX  - this.world.camera.x*4) + ent.radius);
+    var difY = ((this.y - this.world.camera.y * 4) + this.radius) - (ent.worldY + ent.radius);
+    var dist = Math.sqrt(difX * difX + difY * difY);
+    //debugging
+    var rad = this.radius + ent.radius
+    return dist < this.radius + ent.radius;
+  }
+    return false;
+};

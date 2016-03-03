@@ -30,6 +30,7 @@ function Hud(game, spritesheet, brainz) {
 };
 
 Hud.prototype.update = function() {
+  //check if dead
 };
 
 Hud.prototype.draw = function() {
@@ -55,6 +56,18 @@ Hud.prototype.draw = function() {
     }
     this.ctx.restore();
 };
+
+Hud.prototype.healthUp = function(health) {
+  this.brainHealth += health;
+  if(this.brainHealth > this.brainTotalHealth)
+      this.brainHealth = this.brainTotalHealth;
+}
+
+Hud.prototype.healthDown = function(health) {
+  this.brainHealth -= health;
+  if(this.brainHealth < 0)
+      this.brainHealth = 0;
+}
 
 
 function Platform(game, world, x, y, width, height) {

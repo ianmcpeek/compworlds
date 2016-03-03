@@ -5,6 +5,7 @@ AM.queueDownload("./img/title.png");
 AM.queueDownload("./img/castlevania_background.png");
 AM.queueDownload("./img/bruno.png");
 AM.queueDownload("./img/sammy1.png");
+AM.queueDownload("./img/f.png");
 AM.queueDownload("./img/brainz.png");
 AM.queueDownload("./img/pug.png");
 
@@ -23,9 +24,10 @@ AM.queueDownload("./img/paper.png");
 AM.queueDownload("./img/pepper.png");
 AM.queueDownload("./img/tomato.png");
 AM.queueDownload("./img/student.png");
+AM.queueDownload("./img/teacher.png");
 AM.queueDownload("./img/mini-boss.png");
-AM.queueDownload("./img/mini-boss2.png");
-AM.queueDownload("./img/mini-boss3.png");
+//AM.queueDownload("./img/mini-boss2.png");
+//AM.queueDownload("./img/mini-boss3.png");
 AM.queueDownload("./img/professor_growler.png");
 
 AM.downloadAll(function () {
@@ -47,6 +49,9 @@ AM.downloadAll(function () {
     gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/student.png"), 0, 0, 39, 64, 0.2, 6, true), 3652, 700, 20, 1, true));
     gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/student.png"), 0, 0, 39, 64, 0.2, 6, true), 6086, 297, 20, 1, true));
     gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/student.png"), 0, 0, 39, 64, 0.2, 6, true), 6454, 297, 20, 1, true));
+
+    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/teacher.png"), 0, 0, 90, 105, 0.2, 4, true), 3490, 650, 45, 2, true));
+    //this.animation = new Animation(ASSET_MANAGER.getAsset("./img/teacher.png"), 0, 0, 90, 105, 0.2, 4, true, true);
 
     gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/pug.png"), 0, 0, 80, 62, 0.2, 5, true), 2742, 500, 40, 0, false));
     gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/pug.png"), 0, 0, 80, 62, 0.2, 5, true), 4054, 500, 40, 0, false));
