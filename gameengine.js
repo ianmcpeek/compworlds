@@ -30,7 +30,7 @@ GameEngine.prototype.init = function (ctx) {
 }
 
 GameEngine.prototype.titleScreen = function() {
-  this.title_song = new Howl({urls: ["hotlinebling.mp3"], loop: true});
+  this.title_song = new Howl({urls: ["./sounds/hotlinebling.mp3"], loop: true});
   this.title_song.play();
   this.ctx.drawImage(AM.getAsset("./img/title.png"),
                  0, 0,  // source from sheet
@@ -51,7 +51,7 @@ GameEngine.prototype.titleScreen = function() {
       console.log("x:" + x + " y:" + y);
       //x:401-590 y:485-540
       if(!that.started) {
-        that.start(); that.title_song.stop(); that.started = true;
+        that.start(); that.title_song.unload(); that.started = true;
       }
   }, false);
 }
@@ -59,7 +59,7 @@ GameEngine.prototype.titleScreen = function() {
 GameEngine.prototype.start = function () {
     console.log("starting game");
     //start level song
-    this.level_song = new Howl({urls: ["xgon'giveittoyou.mp3"], loop: true});
+    this.level_song = new Howl({urls: ["./sounds/codemonkey.mp3"], loop: true});
     this.level_song.play();
 
     var that = this;

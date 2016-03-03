@@ -41,33 +41,40 @@ AM.downloadAll(function () {
     gameEngine.addHud(new Hud(gameEngine, AM.getAsset("./img/brainz.png"), 3));
 
     //enemies
-    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/pug.png"), 0, 0, 80, 62, 0.2, 5, true), 300, 500, 40, 0, false));
     gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/student.png"), 0, 0, 39, 64, 0.2, 6, true), 1000, 700, 20, 1, true));
-    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/mini-boss.png"), 653, 3.5, 135, 153, 0.31, 5, true), 1400, 600, 76, 3, false));
-    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/mini-boss2.png"), 653, 3.5, 135, 153, 0.31, 5, true), 3600, 600, 76, 3, false));
-    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/mini-boss3.png"), 653, 3.5, 135, 153, 0.31, 5, true), 5000, 600, 76, 3, false));
-    gameEngine.addEntity(new Boss(gameEngine, background, AM.getAsset("./img/professor_growler.png"), 4000, 600, 80, true));
+    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/student.png"), 0, 0, 39, 64, 0.2, 6, true), 1810, 700, 20, 1, true));
+    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/student.png"), 0, 0, 39, 64, 0.2, 6, true), 2354, 700, 20, 1, true));
+    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/student.png"), 0, 0, 39, 64, 0.2, 6, true), 3652, 700, 20, 1, true));
+    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/student.png"), 0, 0, 39, 64, 0.2, 6, true), 6086, 297, 20, 1, true));
+    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/student.png"), 0, 0, 39, 64, 0.2, 6, true), 6454, 297, 20, 1, true));
+
+    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/pug.png"), 0, 0, 80, 62, 0.2, 5, true), 2742, 500, 40, 0, false));
+    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/pug.png"), 0, 0, 80, 62, 0.2, 5, true), 4054, 500, 40, 0, false));
+    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/pug.png"), 0, 0, 80, 62, 0.2, 5, true), 6954, 500, 40, 0, false));
+
+    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/mini-boss.png"), 653, 3.5, 135, 153, 0.31, 5, true), 4586, 600, 76, 3, false));
+    gameEngine.addEntity(new Boss(gameEngine, background, AM.getAsset("./img/professor_growler.png"), 7702, 600, 80, true));
 
     //items
-    gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/avocado.png"), 0));
-    gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/bacon.png"), 40));
-    gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/beans.png"), 80));
-    gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/bottle.png"), 120));
-    gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/bread.png"), 160));
-    gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/carrot.png"), 210));
-    gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/cheese.png"), 250));
-    gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/ham.png"), 290));
-    gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/ketchup.png"), 330));
-	  gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/mayo.png"), 370));
-	  gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/mustard.png"), 410));
-	  gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/paper.png"), 450));
-	  gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/pepper.png"), 490));
-	  gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/tomato.png"), 530));
+    // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/avocado.png"), 0));
+    // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/bacon.png"), 40));
+    gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/beans.png"), 4958));
+    gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/bottle.png"), 400));
+    // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/bread.png"), 160));
+    gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/carrot.png"), 6338));
+    // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/cheese.png"), 250));
+    // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/ham.png"), 290));
+    gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/ketchup.png"), 3222));
+	  // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/mayo.png"), 370));
+	  // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/mustard.png"), 410));
+	  // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/paper.png"), 450));
+	  // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/pepper.png"), 490));
+	  // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/tomato.png"), 530));
 
     //platforms
-    //x:401-590 y:485-540
-    gameEngine.addPlatform(new Platform(gameEngine, background, 5825, 485, 190, 55));
+
     gameEngine.addPlatform(new Platform(gameEngine, background, 0, 760, 11000, 55));
+    gameEngine.addPlatform(new Platform(gameEngine, background, 5825, 485, 190, 55));
     gameEngine.addPlatform(new Platform(gameEngine, background, 6085, 361, 630, 55));
     gameEngine.addPlatform(new Platform(gameEngine, background, 6785, 490, 380, 55));
     gameEngine.addPlatform(new Platform(gameEngine, background, 8645, 360, 1080, 55));
@@ -105,6 +112,13 @@ Animation.prototype.drawStill = function (ctx, xindex, yindex, x, y, direction) 
                    this.frameWidth,
                    this.frameHeight);
     }
+}
+
+Animation.prototype.advanceFrame = function(tick) {
+  this.elapsedTime += tick;
+  if (this.isDone()) {
+      if (this.loop) this.elapsedTime = 0;
+  }
 }
 
 Animation.prototype.drawFrame = function (tick, ctx, x, y, direction) {

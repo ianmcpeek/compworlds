@@ -79,6 +79,7 @@ Bruno.prototype.draw = function () {
     //the idle animation is on a timer that resets whenever an action is drawn, or the idle animation is done
     if(this.isThrowing) {
       this.throwAnimation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y, this.isleft);
+      if(this.jumping) this.jumpAnimation.advanceFrame(this.game.clockTick);
     } else if (this.jumping) {
         this.jumpAnimation.drawFrame(this.game.clockTick, this.ctx, this.x, this.y, this.isleft);
     } else if(this.falling) {
@@ -101,6 +102,7 @@ Bruno.prototype.draw = function () {
 Bruno.prototype.update = function() {
 
   if (this.x < 800 && this.x > -1) {
+    this.isIdle = true;
     if(this.game.keyright) {
       if(this.x >= 400 && this.world.camera.x + 800 < this.world.worldEnds.right ) {this.world.camera.x += 1; this.worldX += 4;}
       else {this.x += 4; this.worldX += 4;}
@@ -111,50 +113,42 @@ Bruno.prototype.update = function() {
       else {this.x -= 4; this.worldX -= 4;}
       this.isIdle = false; this.isleft = true;
     }
-    else this.isIdle = true;
-    if (this.game.space && !this.isThrowing && !this.falling) {this.jumping = true; this.isIdle = false;}
+    if (this.game.space && !this.isThrowing && !this.falling) {this.jumping = true; this.isIdle = false; console.log("x: " + this.worldX);}
     else if(this.game.keyx && !this.isThrowing) {
       this.isThrowing = true;
       //this.game.addEntity(new Sandwich(this.game, AM.getAsset("./img/sammy1.png"), this.x, this.y, this.isleft));//game, spritesheet, x, isleft
       this.isIdle = false;}
-      if(this.isThrowing) {
-          if(this.throwAnimation.currentFrame() === 3 && !this.thrown) {
-            this.game.addEntity(new Sandwich(this.game, this.world, AM.getAsset("./img/sammy1.png"), this.x, this.y, this.worldX, this.worldY, this.isleft));
-            this.thrown = true;
-          }
-          if(this.throwAnimation.isDone()) {
-              this.throwAnimation.elapsedTime = 0;
-              this.isThrowing = false; this.thrown = false;
-          }
-      } else if (this.jumping) {
-          if (this.jumpAnimation.isDone()) {
-              this.jumpAnimation.elapsedTime = 0;
-              this.jumping = false;
-              console.log("x: " + this.worldX);
-          }
-          var jumpDistance = this.jumpAnimation.elapsedTime / this.jumpAnimation.totalTime;
-          var totalHeight = 300;
 
-          // if (jumpDistance > 0.5)
-          //     jumpDistance = 1 - jumpDistance;
-          //
-          // //var height = jumpDistance * 2 * totalHeight;
-          //   var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
-          //   this.y = this.ground - height; this.worldY = this.ground - height;
-
-          if (jumpDistance < 0.5) {
-            //var height = jumpDistance * 2 * totalHeight;
-              var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
-              this.y = (this.ground - this.radius*2) - height; this.worldY = (this.ground - this.radius*2) - height;
-          } else {
-            //begin descent
-            //jumpDistance = 1 - jumpDistance;
-            this.falling = true;
-            this.fallVelocity = 0.5;
-            this.jumping = false; this.jumpAnimation.elapsedTime = 0;
+    if(this.isThrowing) {
+        if(this.throwAnimation.currentFrame() === 3 && !this.thrown) {
+          this.game.addEntity(new Sandwich(this.game, this.world, AM.getAsset("./img/sammy1.png"), this.x, this.y, this.worldX, this.worldY, this.isleft));
+          this.thrown = true;
         }
+        if(this.throwAnimation.isDone()) {
+            this.throwAnimation.elapsedTime = 0;
+            this.isThrowing = false; this.thrown = false;
+        }
+    }
+    if (this.jumping) {
+        if (this.jumpAnimation.isDone()) {
+            this.jumpAnimation.elapsedTime = 0;
+            this.jumping = false;
+        }
+        var jumpDistance = this.jumpAnimation.elapsedTime / this.jumpAnimation.totalTime;
+        var totalHeight = 300;
+
+        if (jumpDistance < 0.5) {
+          //var height = jumpDistance * 2 * totalHeight;
+            var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
+            this.y = (this.ground - this.radius*2) - height; this.worldY = (this.ground - this.radius*2) - height;
+        } else {
+          //begin descent
+          //jumpDistance = 1 - jumpDistance;
+          this.falling = true;
+          this.fallVelocity = 0.5;
+          this.jumping = false; this.jumpAnimation.elapsedTime = 0;
       }
-  } else this.isIdle = true;
+    }
 
   //falling code
   var collided = false;
@@ -174,7 +168,7 @@ Bruno.prototype.update = function() {
   }
   else {
     if (!this.jumping)this.ground = this.y + this.radius*2; this.fallVelocity = 0.5; this.falling = false;}
-
+  }
     //check for keys pressed
     //check whether still in animation
     //if no keys pressed return to idle

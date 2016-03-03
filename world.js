@@ -34,6 +34,7 @@ Hud.prototype.update = function() {
 
 Hud.prototype.draw = function() {
     //console.log("Brain Health: " + this.brainHealth);
+    this.ctx.save();
     var wholeBrainz = Math.floor(this.brainHealth / 4);
     //draw whole brainz
     var brainX = 20;
@@ -52,6 +53,7 @@ Hud.prototype.draw = function() {
         this.brainImage.drawStill(this.ctx, 4, 0, brainX, 20);
         brainX += 60;
     }
+    this.ctx.restore();
 };
 
 
