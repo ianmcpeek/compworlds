@@ -192,8 +192,8 @@ Bruno.prototype.updateXSpeed = function (dir) {
     speedUp = this.speed / 2;
     this.speedTimer -= 1;
   }
-  if(this.isCentered()) {
-    this.world.camera.x += (this.worldSpeed + (speedUp/4))*dir; //ratio of speed to world speed;
+  if(this.isCentered() && !this.world.locked) {
+    if(!this.world.locked) this.world.camera.x += (this.worldSpeed + (speedUp))*dir; //ratio of speed to world speed;
     this.worldX += (this.speed + (speedUp))*dir;
   } else {
     this.x += (this.speed + speedUp)*dir;

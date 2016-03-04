@@ -6,7 +6,9 @@ function Background(game, backgroundImage) {
     this.image = backgroundImage;
     this.radius = 200;
     this.camera = {x: 0, y: 0};
+    this.locked = false;
     this.worldEnds = {top: 0, bottom: 0, left: 0, right: 3410};
+    this.game = game;
 }
 
 Background.prototype.update = function () {
@@ -20,6 +22,38 @@ Background.prototype.draw = function (ctx) {
                800, 800);
 };
 
+Background.prototype.lockScreen = function() {
+  if(!this.locked) {
+    this.game.level_song.pause();
+    this.game.boss_song.play();
+    this.locked = true;
+  }
+
+};
+
+Background.prototype.unlockScreen = function() {
+  if(this.locked) {
+    this.game.level_song.play();
+    this.game.boss_song.stop();
+    this.locked = false;
+  }
+
+};
+
+Background.prototype.collideRightWall = function(ent, speed) {
+  if(this.locked) {
+    return ((ent.x - this.camera.x*4) + ent.radius*2) + speed + 2 > 800;
+  }
+  return false;
+};
+
+Background.prototype.collideLeftWall = function(ent, speed) {
+  if(this.locked) {
+    return (ent.x - this.camera.x*4) - speed  - 2 < 0;
+  }
+  return false;
+};
+
 function Hud(game, spritesheet, brainz) {
   this.brainImage = new Animation(spritesheet, 0, 0, 64, 64, 0.05, 5);
   this.braincount = brainz;
@@ -31,6 +65,7 @@ function Hud(game, spritesheet, brainz) {
 
 Hud.prototype.update = function() {
   //check if dead
+  if(this.brainHealth < 1) this.game.gameOverScreen();
 };
 
 Hud.prototype.draw = function() {

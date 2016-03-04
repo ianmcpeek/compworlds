@@ -3,7 +3,7 @@ function Enemy(game, world, animation, x, y, radius, enemyType, isleft) {
     this.animation = animation;
     this.isleft = isleft;
     this.isIdle = false;
-    this.enemyTypes = ["pug", "student", "teacher", "miniboss"];
+    this.enemyTypes = ["pug", "student", "teacher", "miniboss", "boss"];
     this.enemyType = enemyType;
     this.health = 3;//later added as parameter
     this.ground = y; //used for jump reference
@@ -20,6 +20,8 @@ function Enemy(game, world, animation, x, y, radius, enemyType, isleft) {
       this.teacherInit();
     } else if(this.enemyTypes[enemyType] == "miniboss") {
       this.minibossInit();
+    } else if(this.enemyTypes[enemyType] == "boss") {
+      this.bossInit();
     }
     //if miniboss, initialize miniboss
     //if boss, initilize boss
@@ -29,44 +31,50 @@ Enemy.prototype = new Entity();
 Enemy.prototype.constructor = Enemy;
 
 Enemy.prototype.update = function () {
-  //if(this.x > this.background.center - 400 && this.x < this.background.center + 400) {
-    //this.visible = true;
-    //console.log("update enemy");
-  //} else this.visible = false;
-  //this.x -= 2;
-  //pug
-  if(this.enemyTypes[this.enemyType] == "pug") {
-    this.pugUpdate();
-  } else if(this.enemyTypes[this.enemyType] == "student") {
-    this.studentUpdate();
-  } else if(this.enemyTypes[this.enemyType] == "teacher") {
-    this.teacherUpdate();
-  } else if(this.enemyTypes[this.enemyType] == "miniboss") {
-    this.minibossUpdate();
-  }
-  //mini-boss
 
-  if(this.timer > 0) {
-    this.timer -= 1;
+
+  if(Entity.prototype.offScreen.call(this)) {
+    this.visible = false;
   } else {
-    if(this.collide(this.game.player)) {
-      console.log("collided with player");
-      this.game.hud.healthDown(1);
-      this.timer = 50;
+    if(this.enemyTypes[this.enemyType] == "pug") {
+      this.pugUpdate();
+    } else if(this.enemyTypes[this.enemyType] == "student") {
+      this.studentUpdate();
+    } else if(this.enemyTypes[this.enemyType] == "teacher") {
+      this.teacherUpdate();
+    } else if(this.enemyTypes[this.enemyType] == "miniboss") {
+      this.minibossUpdate();
+    } else if(this.enemyTypes[this.enemyType] == "boss") {
+      this.bossUpdate();
     }
+
+    if(this.timer > 0) {
+      this.timer -= 1;
+    } else {
+      if(this.collide(this.game.player)) {
+        console.log("collided with player");
+        this.game.hud.healthDown(1);
+        this.timer = 50;
+      }
+    }
+    if(this.health < 1) {
+      this.removeFromWorld = true;
+      if(this.enemyTypes[this.enemyType] == "miniboss" || this.enemyTypes[this.enemyType] == "boss")
+          this.world.unlockScreen();
+    }
+    Entity.prototype.update.call(this);
+    this.visible = true;
   }
-  Entity.prototype.update.call(this);
 }
 
 Enemy.prototype.draw = function (ctx) {
-  //if(Entity.prototype.onScreen.call(this)) {
-      //console.log("draw enemy");
-      if(this.jumping) {
-        this.jumpAnimation.drawFrame(this.game.clockTick, ctx, this.x - this.world.camera.x * 4, this.y - this.world.camera.y * 4, this.isleft);
-      } else {
-          this.animation.drawFrame(this.game.clockTick, ctx, this.x - this.world.camera.x * 4, this.y - this.world.camera.y * 4, this.isleft);
-      }
-  //}
+  if(this.visible) {
+    if(this.jumping) {
+      this.jumpAnimation.drawFrame(this.game.clockTick, ctx, this.x - this.world.camera.x * 4, this.y - this.world.camera.y * 4, this.isleft);
+    } else {
+        this.animation.drawFrame(this.game.clockTick, ctx, this.x - this.world.camera.x * 4, this.y - this.world.camera.y * 4, this.isleft);
+    }
+  }
   Entity.prototype.draw.call(this, this.ctx);
 }
 
@@ -137,31 +145,82 @@ Enemy.prototype.minibossInit = function() {
 }
 
 Enemy.prototype.minibossUpdate = function() {
+  if(this.x + this.radius*2 - this.game.player.worldX < 400)this.world.lockScreen();
 
   if(this.jumpTimer > 0 && !this.jumping) {
     this.jumpTimer -= 1;
+    //determine if direction, miniboss sprite faces left, so this is reversed
     var dir = this.runToPlayer();
     if (dir < 0) this.isleft = false;
     else this.isleft = true;
-    this.x += 2 * dir;
+    //determine whether to stop before running offscreen
+    if(this.isleft) {
+      if(!this.world.collideRightWall(this, 2)) this.x += 2;
+    } else {
+      if(!this.world.collideLeftWall(this, 2)) this.x += -2;
+    }
   } else if(!this.jumping) {
     this.jumping = true;
     this.jumpTimer = 200;
   }
   this.jump(500);
-  if(this.jumping)
-      this.x += this.isleft ? 6 : -6;
+  if(this.jumping) {
+    if(this.isleft) {
+      if(!this.world.collideRightWall(this, 6)) this.x += 6;
+    } else {
+      if(!this.world.collideLeftWall(this, 6)) this.x += -6;
+    }
+  }
 
   //determine when to shoot
-  if(this.shootTimer > 0) {
+  if(this.shootTimer > 0 && !this.jumping) {
     this.shootTimer -= 1;
-  } else {
+  } else if (!this.jumping){
     this.game.addEntity(new Projectile(this.game, this.world, AM.getAsset("./img/f.png"), this.x, this.y, this.radius, !this.isleft));
-    this.shootTimer = 100;
+    this.shootTimer = 150;
   }
 }
 
 /* PROFESSOR GROWLER FUNCTIONS */
+Enemy.prototype.bossInit = function() {
+  this.shootTimer = 100;
+  this.jumpTimer = 200;
+  this.jumping = false;
+  this.jumpAnimation = new Animation(AM.getAsset("./img/professor_growler.png"), 150, 316, 168, 167, 1.2, 1, false);
+  this.mouthAnimation = new Animation(AM.getAsset("./img/professor_growler.png"), 480, 0, 160, 160, 0.3, 3, false);
+}
+
+Enemy.prototype.bossUpdate = function() {
+  if(this.x + this.radius*2 - this.game.player.worldX < 400) this.world.lockScreen();
+
+  if(this.jumpTimer > 0 && !this.jumping) {
+    this.jumpTimer -= 1;
+    //determine if direction, miniboss sprite faces left, so this is reversed
+    var dir = this.runToPlayer();
+    if (dir < 0) this.isleft = true;
+    else this.isleft = false;
+    //determine whether to stop before running offscreen
+  } else if(!this.jumping) {
+    this.jumping = true;
+    this.jumpTimer = 200;
+  }
+  this.jump(500);
+  if(this.jumping) {
+    if(!this.isleft) {
+      if(!this.world.collideRightWall(this, 6)) this.x += 6;
+    } else {
+      if(!this.world.collideLeftWall(this, 6)) this.x += -6;
+    }
+  }
+
+  //determine when to shoot
+  if(this.shootTimer > 0 && !this.jumping) {
+    this.shootTimer -= 1;
+  } else if (!this.jumping){
+    this.game.addEntity(new Projectile(this.game, this.world, AM.getAsset("./img/f.png"), this.x, this.y, this.radius, this.isleft));
+    this.shootTimer = 150;
+  }
+}
 
 /* PROJECTILE & RELATED FUNCTIONS */
 function Projectile(game, world, spritesheet, x, y, radius, isleft) {
@@ -174,6 +233,11 @@ function Projectile(game, world, spritesheet, x, y, radius, isleft) {
 Projectile.prototype = new Entity();
 
 Projectile.prototype.update = function() {
+  //check if went offscreen
+  if(Entity.prototype.offScreen.call(this)) {
+    this.removeFromWorld = true;
+    console.log("off screen projectile!");
+  }
   //check if projectile hit player
   if (this.hit(this.game.player)) {
     this.game.hud.healthDown(1);

@@ -16,6 +16,7 @@ function GameEngine() {
     this.hud = null;
     this.ctx = null;
     this.debug = false;
+    this.gameOver = false;
     this.surfaceWidth = null;
     this.surfaceHeight = null;
 }
@@ -55,8 +56,27 @@ GameEngine.prototype.titleScreen = function() {
   }, false);
 }
 
+GameEngine.prototype.gameOverScreen = function() {
+  this.gameOver = true;
+  this.level_song.unload();
+  this.boss_song.unload();
+  this.gameover_song = new Howl({urls: ["./sounds/hello.mp3"], loop: false});
+  this.gameover_song.play();
+  var ctx = document.getElementById("gameWorld").getContext("2d");
+  ctx.clearRect(0, 0, 800, 800);
+  ctx.drawImage(AM.getAsset("./img/gameover.png"),
+                 0, 0,  // source from sheet
+                 800, 800,
+                 0, 0,
+                 800, 800);
+  this.started = false;
+}
+
 GameEngine.prototype.start = function () {
     console.log("starting game");
+    //load boss song
+    this.boss_song = new Howl({urls: ["./sounds/xgon'giveittoyou.mp3"], loop: true});
+
     //start level song
     this.level_song = new Howl({urls: ["./sounds/codemonkey.mp3"], loop: true});
     this.level_song.play();
@@ -64,8 +84,10 @@ GameEngine.prototype.start = function () {
 
     var that = this;
     (function gameLoop() {
+      if(!that.gameOver) {
         that.loop();
         requestAnimFrame(gameLoop, that.ctx.canvas);
+      }
     })();
 }
 
@@ -152,13 +174,13 @@ GameEngine.prototype.update = function () {
 }
 
 GameEngine.prototype.loop = function () {
-    this.clockTick = this.timer.tick();
-    this.update();
-    this.draw();
-    // this.keyright = null;
-    // this.keyleft = null;
-    this.keyx = null;
-    this.space = null;
+      this.clockTick = this.timer.tick();
+      this.update();
+      this.draw();
+      // this.keyright = null;
+      // this.keyleft = null;
+      this.keyx = null;
+      this.space = null;
 }
 
 function Timer() {

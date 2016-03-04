@@ -13,7 +13,6 @@ function Entity(game, world, x, y, radius, type) {
 }
 
 Entity.prototype.update = function () {
-  if(this.health < 1) this.removeFromWorld = true;
 };
 
 Entity.prototype.draw = function (ctx) {
@@ -30,11 +29,8 @@ Entity.prototype.draw = function (ctx) {
 };
 
 Entity.prototype.offScreen = function () {
-  return false;
-  // console.log("ent x: " + this.x - this.world.camera.x*4);
-  // console.log("camera x: " + this.world.camera.x + 800);
-  // return (this.x - this.world.camera.x*4 > this.world.camera.x + 800 || (this.x + this.radius*2) - this.world.camera.x*4 < this.world.camera.x)
-  //     || (this.y  - this.world.camera.y*4> this.world.camera.y + 800 || (this.y + this.radius*2) - this.world.camera.y*4 < this.world.camera.y);
+  return ((this.x + this.radius*2) - this.world.camera.x*4 < 0) ||
+        (this.x - this.world.camera.x*4 > 800);
 };
 
 //Entity.prototype = new Entity();
