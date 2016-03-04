@@ -59,7 +59,7 @@ AM.downloadAll(function () {
     gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/pug.png"), 0, 0, 80, 62, 0.2, 5, true), 6954, 500, 40, 0, false));
 
     gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/mini-boss.png"), 653, 3.5, 135, 153, 0.31, 5, true), 4586, 600, 76, 3, false));
-    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/professor_growler.png"), 0, 0, 160, 160, 0.5, 3, true), 7702, 600, 80, 4, true));
+    gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/professor_growler.png"), 480, 0, 160, 160, 0.3, 3, true), 7702, 600, 80, 4, true));   //0, 0, 160, 160, 0.5, 3, true), 7702, 600, 80, 4, true));
 
     //items
     // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/avocado.png"), 0));
