@@ -53,7 +53,7 @@ GameEngine.prototype.titleScreen = function() {
 
 GameEngine.prototype.winScreen = function() {
   this.win = true;
-  this.level_song.stop();
+  this.level_song.unload();
   this.win_song.play();
   this.started = false;
 }
