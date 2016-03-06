@@ -74,7 +74,6 @@ GameEngine.prototype.start = function () {
 
     //start level song
     this.title_song.unload();
-    this.level_song.load();
     this.level_song.play();
 }
 
