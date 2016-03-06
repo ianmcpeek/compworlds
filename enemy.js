@@ -1,11 +1,12 @@
 
-function Enemy(game, world, animation, x, y, radius, enemyType, isleft) {
+function Enemy(game, world, animation, x, y, radius, stats, isleft) {
     this.animation = animation;
     this.isleft = isleft;
     this.isIdle = false;
     this.enemyTypes = ["pug", "student", "teacher", "miniboss", "boss"];
-    this.enemyType = enemyType;
-    this.health = 3;//later added as parameter
+    this.enemyType = stats.t;
+    this.health = stats.h;//later added as parameter
+    this.damage = stats.d
     this.ground = y; //used for jump reference
     this.timer = 50;
 
@@ -16,11 +17,11 @@ function Enemy(game, world, animation, x, y, radius, enemyType, isleft) {
     this.ctx = game.ctx;
 
     //if teacher, initialize teacher
-    if(this.enemyTypes[enemyType] == "teacher") {
+    if(this.enemyTypes[this.enemyType] == "teacher") {
       this.teacherInit();
-    } else if(this.enemyTypes[enemyType] == "miniboss") {
+    } else if(this.enemyTypes[this.enemyType] == "miniboss") {
       this.minibossInit();
-    } else if(this.enemyTypes[enemyType] == "boss") {
+    } else if(this.enemyTypes[this.enemyType] == "boss") {
       this.bossInit();
     }
     //if miniboss, initialize miniboss
@@ -53,7 +54,7 @@ Enemy.prototype.update = function () {
     } else {
       if(this.collide(this.game.player)) {
         console.log("collided with player");
-        this.game.hud.healthDown(1);
+        this.game.hud.healthDown(this.damage);
         this.timer = 50;
       }
     }
@@ -68,14 +69,18 @@ Enemy.prototype.update = function () {
 }
 
 Enemy.prototype.draw = function (ctx) {
-  if(this.visible) {
-    if(this.jumping) {
-      this.jumpAnimation.drawFrame(this.game.clockTick, ctx, this.x - this.world.camera.x * 4, this.y - this.world.camera.y * 4, this.isleft);
-    } else {
-        this.animation.drawFrame(this.game.clockTick, ctx, this.x - this.world.camera.x * 4, this.y - this.world.camera.y * 4, this.isleft);
+  if(this.enemyTypes[this.enemyType] == "boss") {
+    this.bossDraw(ctx);
+  } else {
+    if(this.visible) {
+      if(this.jumping) {
+        this.jumpAnimation.drawFrame(this.game.clockTick, ctx, this.x - this.world.camera.x * 4, this.y - this.world.camera.y * 4, this.isleft);
+      } else {
+          this.animation.drawFrame(this.game.clockTick, ctx, this.x - this.world.camera.x * 4, this.y - this.world.camera.y * 4, this.isleft);
+      }
     }
+    Entity.prototype.draw.call(this, this.ctx);
   }
-  Entity.prototype.draw.call(this, this.ctx);
 }
 
 Enemy.prototype.collide = function (ent) {
@@ -176,7 +181,7 @@ Enemy.prototype.minibossUpdate = function() {
   if(this.shootTimer > 0 && !this.jumping) {
     this.shootTimer -= 1;
   } else if (!this.jumping){
-    this.game.addEntity(new Projectile(this.game, this.world, AM.getAsset("./img/f.png"), this.x, this.y, this.radius, !this.isleft));
+    this.game.addEntity(new Projectile(this.game, this.world, AM.getAsset("./img/f.png"), this.x, this.y, this.radius, this.damage, !this.isleft));
     this.shootTimer = 150;
   }
 }
@@ -184,10 +189,12 @@ Enemy.prototype.minibossUpdate = function() {
 /* PROFESSOR GROWLER FUNCTIONS */
 Enemy.prototype.bossInit = function() {
   this.shootTimer = 100;
+  this.shooting = false;
   this.jumpTimer = 200;
   this.jumping = false;
-  this.jumpAnimation = new Animation(AM.getAsset("./img/professor_growler.png"), 150, 316, 168, 167, 1.2, 1, false);
-  this.mouthAnimation = new Animation(AM.getAsset("./img/professor_growler.png"), 480, 0, 160, 160, 0.3, 3, false);
+  this.belchSound = new Howl({urls: ["./sounds/effects/belch.mp3"], loop: false});
+  this.jumpAnimation = new Animation(AM.getAsset("./img/professor_growler.png"), 0, 2, 160, 160, 1.2, 3, false);
+  this.mouthAnimation = new Animation(AM.getAsset("./img/professor_growler.png"), 320, 0, 160, 160, 0.2, 4, false);
 }
 
 Enemy.prototype.bossUpdate = function() {
@@ -200,7 +207,7 @@ Enemy.prototype.bossUpdate = function() {
     if (dir < 0) this.isleft = true;
     else this.isleft = false;
     //determine whether to stop before running offscreen
-  } else if(!this.jumping) {
+  } else if(!this.jumping && !this.shooting) {
     this.jumping = true;
     this.jumpTimer = 200;
   }
@@ -217,16 +224,37 @@ Enemy.prototype.bossUpdate = function() {
   if(this.shootTimer > 0 && !this.jumping) {
     this.shootTimer -= 1;
   } else if (!this.jumping){
-    this.game.addEntity(new Projectile(this.game, this.world, AM.getAsset("./img/f.png"), this.x, this.y, this.radius, this.isleft));
-    this.shootTimer = 150;
+    this.shooting = true;
+    if(this.mouthAnimation.isDone()) {
+      this.game.addEntity(new Projectile(this.game, this.world, AM.getAsset("./img/f.png"), this.x, this.y, this.radius, this.damage, this.isleft));
+      this.belchSound.play();
+      this.shootTimer = 100;
+      this.shooting = false;
+      this.mouthAnimation.elapsedTime = 0;
+    }
   }
 }
 
+Enemy.prototype.bossDraw = function(ctx) {
+  if(this.visible) {
+    if(this.jumping) {
+      this.jumpAnimation.drawStill(this.ctx, 1, 2, this.x - this.world.camera.x*4, this.y - this.world.camera.y*4, this.isleft);
+      this.jumpAnimation.advanceFrame(this.game.clockTick);
+    } else if(this.shooting) {
+      this.mouthAnimation.drawFrame(this.game.clockTick, ctx, this.x - this.world.camera.x * 4, this.y - this.world.camera.y * 4, this.isleft);
+    } else {
+        this.animation.drawFrame(this.game.clockTick, ctx, this.x - this.world.camera.x * 4, this.y - this.world.camera.y * 4, this.isleft);
+    }
+  }
+  Entity.prototype.draw.call(this, this.ctx);
+}
+
 /* PROJECTILE & RELATED FUNCTIONS */
-function Projectile(game, world, spritesheet, x, y, radius, isleft) {
+function Projectile(game, world, spritesheet, x, y, radius, damage, isleft) {
   this.animation = new Animation(spritesheet, 0, 0, 64, 64, 0.08, 1, true);
   this.isleft = isleft;
   this.ctx = game.ctx;
+  this.damage = damage;
   Entity.call(this, game, world, x, y+radius, 16, 2);
 }
 
@@ -240,7 +268,7 @@ Projectile.prototype.update = function() {
   }
   //check if projectile hit player
   if (this.hit(this.game.player)) {
-    this.game.hud.healthDown(1);
+    this.game.hud.healthDown(this.damage);
     this.removeFromWorld = true;
   }
 

@@ -2,6 +2,7 @@
 //look for how to find class type
 function Sandwich(game, world, spritesheet, x, y, isleft) {
   this.spinAnimation = new Animation(spritesheet, 0, 0, 32, 32, 0.08, 5, true);
+  this.hitSound = new Howl({urls: ["./sounds/effects/splat1.mp3"], loop: false});
   this.isleft = isleft;
   this.ctx = game.ctx;
   Entity.call(this, game, world, x, y+30, 16, 5);
@@ -21,6 +22,7 @@ Sandwich.prototype.update = function() {
       if (this != ent && this.hit(ent)) {
         ent.health -= 1;
         console.log("enemy hit, health: " + ent.health);
+        this.hitSound.play();
         this.removeFromWorld = true;
       }
   }
@@ -117,8 +119,8 @@ Bruno.prototype.update = function() {
     var collidedRight = false;
     for(var i = 0; i < this.game.platforms.length; i++) {
       var platform = this.game.platforms[i];
-      if(platform.collideRight(this)) collidedRight = true;
-      else if(platform.collideLeft(this)) collidedLeft = true;
+      if(platform.collideRight(this) || this.x + this.radius*2 > 795) collidedRight = true;
+      else if(platform.collideLeft(this) || this.x < 5) collidedLeft = true;
       if(platform.collideTop(this)) collidedTop = true;
       else if(platform.collideBottom(this)) collidedBottom = true;
     }

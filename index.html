@@ -1,9 +1,21 @@
-﻿
-<!DOCTYPE html>
-<html>
-<head>
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
     <meta charset="utf-8">
-    <title>Game Project Shell</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Play Bruno now</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="dist/jumbotron.css" rel="stylesheet">
+
     <script type="text/javascript" src="./gameengine.js"></script>
     <script type="text/javascript" src="./assetmanager.js"></script>
     <script type="text/javascript" src="./entity.js"></script>
@@ -14,12 +26,54 @@
     <script type="text/javascript" src="./main.js"></script>
     <script type="text/javascript" src="./boss.js"></script>
     <script type="text/javascript" src="./howler/howler.js"></script>
-</head>
-<body>
-    <p>Controls:</p>
-    <p>arrow keys to move left & right</p>
-    <p>press x to throw sandwich</p>
-    <p>press space to jump</p>
-    <canvas id="gameWorld" tabindex="1" width="800" height="800" ></canvas>
-</body>
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Bruno!</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+        </div><!--/.navbar-collapse -->
+      </div>
+    </nav>
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container">
+        <h1 id="caliber">About the Game</h1>
+        <p>Experience the premier side-scrolling, action packed, simulator of school life at UW Tacoma.
+           Step into the shoes of Bruno, a Computer Science student trying to earn a degree with nothing
+           but his smarts and a backpack full of sandwiches. Face off against the dangerous faculty and collect
+           food items to stay energized in the fight for an education.</p>
+
+        <p>Currently the game has the first level completed, but more levels are coming soon!</p>
+        <br/>
+        <h2>Controls:</h2>
+        <p><img src="./img/arrowkeys.png" alt="Arrow Keys" width="100" height="50"> move left & right</p>
+        <p><img src="./img/spacekey.png" alt="Space Key" width="100" height="50"> jump with space bar</p>
+        <p><img src="./img/xkey.png" alt="X Key" width="50" height="50"> throw sandwich with X</p>
+        <canvas id="gameWorld" tabindex="1" width="800" height="800" ></canvas>
+
+
+
+
+      </div>
+    </div>
+
+      <footer>
+        <p>&copy; 2016 HuSCII Enterprises, Inc.</p>
+      </footer>
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="dist/js/bootstrap.js"></script>
+  </body>
 </html>

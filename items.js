@@ -1,4 +1,5 @@
 function Item(game, world, sheet, x) {
+    this.pickup = new Howl({urls: ["./sounds/effects/shiny2.mp3"], loop: false});
     this.bounceAnimation 	= new Animation(sheet, 0, 0, 32, 32, 1, 1, true);
     this.ground = 700;
     Entity.call(this, game, world, x, 600, 16, 3);
@@ -10,6 +11,7 @@ Item.prototype.constructor = Item;
 Item.prototype.update = function () {
   if(this.collide(this.game.player)) {
     this.game.hud.healthUp(2);
+    this.pickup.play();
     this.removeFromWorld = true;
   }
 	var bounceDistance = this.bounceAnimation.elapsedTime / this.bounceAnimation.totalTime;

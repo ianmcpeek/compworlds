@@ -26,69 +26,41 @@ GameEngine.prototype.init = function (ctx) {
     this.surfaceWidth = this.ctx.canvas.width;
     this.surfaceHeight = this.ctx.canvas.height;
     this.timer = new Timer();
+    this.title_song = new Howl({urls: ["./sounds/hotlinebling.mp3"], loop: true});
+    this.level_song = new Howl({urls: ["./sounds/codemonkey.mp3"], loop: true});
+    this.boss_song = new Howl({urls: ["./sounds/xgon'giveittoyou.mp3"], loop: true});
+    this.gameover_song = new Howl({urls: ["./sounds/hello.mp3"], loop: false});
     console.log('game initialized');
+    this.startInput();
+    var that = this;
+    (function gameLoop() {
+        that.loop();
+        requestAnimFrame(gameLoop, that.ctx.canvas);
+    })();
 }
 
 GameEngine.prototype.titleScreen = function() {
-  this.title_song = new Howl({urls: ["./sounds/hotlinebling.mp3"], loop: true});
+  this.gameover_song.stop();
   this.title_song.play();
-  this.ctx.drawImage(AM.getAsset("./img/title.png"),
-                 0, 0,  // source from sheet
-                 800, 800,
-                 0, 0,
-                 800, 800);
   this.started = false;
 
-  var that = this;
-
-  this.ctx.canvas.addEventListener("mousedown", function (e) {
-      var x = e.x;
-      var y = e.y;
-
-      x -= that.ctx.canvas.offsetLeft;
-      y -= that.ctx.canvas.offsetTop;
-
-      console.log("x:" + x + " y:" + y);
-      //x:401-590 y:485-540
-      if(!that.started) {
-        that.start(); that.title_song.unload(); that.started = true;
-      }
-  }, false);
 }
 
 GameEngine.prototype.gameOverScreen = function() {
   this.gameOver = true;
-  this.level_song.unload();
-  this.boss_song.unload();
-  this.gameover_song = new Howl({urls: ["./sounds/hello.mp3"], loop: false});
+  this.level_song.stop();
+  this.boss_song.stop();
   this.gameover_song.play();
-  var ctx = document.getElementById("gameWorld").getContext("2d");
-  ctx.clearRect(0, 0, 800, 800);
-  ctx.drawImage(AM.getAsset("./img/gameover.png"),
-                 0, 0,  // source from sheet
-                 800, 800,
-                 0, 0,
-                 800, 800);
+  this.ctx.clearRect(0, 0, 800, 800);
   this.started = false;
 }
 
 GameEngine.prototype.start = function () {
     console.log("starting game");
-    //load boss song
-    this.boss_song = new Howl({urls: ["./sounds/xgon'giveittoyou.mp3"], loop: true});
 
     //start level song
-    this.level_song = new Howl({urls: ["./sounds/codemonkey.mp3"], loop: true});
+    this.title_song.stop();
     this.level_song.play();
-    this.startInput();
-
-    var that = this;
-    (function gameLoop() {
-      if(!that.gameOver) {
-        that.loop();
-        requestAnimFrame(gameLoop, that.ctx.canvas);
-      }
-    })();
 }
 
 GameEngine.prototype.startInput = function () {
@@ -96,10 +68,10 @@ GameEngine.prototype.startInput = function () {
     var that = this;
 
     this.ctx.canvas.addEventListener("keydown", function (e) {
-        if (String.fromCharCode(e.which) === '\'') that.keyright = true;
-        else if (String.fromCharCode(e.which) === '%') that.keyleft = true;
-        if (String.fromCharCode(e.which) === 'X') that.keyx = true;
-        else if(String.fromCharCode(e.which) === ' ') that.space = true;
+        if (String.fromCharCode(e.which) === '\'') that.keyright = that.started? true : false;
+        else if (String.fromCharCode(e.which) === '%') that.keyleft = that.started? true : false;
+        if (String.fromCharCode(e.which) === 'X') that.keyx = that.started? true : false;
+        else if(String.fromCharCode(e.which) === ' ') that.space = that.started? true : false;
 //        console.log(e);
         e.preventDefault();
     }, false);
@@ -109,6 +81,20 @@ GameEngine.prototype.startInput = function () {
         else if (String.fromCharCode(e.which) === '%') that.keyleft = false;
 
         e.preventDefault();
+    }, false);
+
+    this.ctx.canvas.addEventListener("mousedown", function (e) {
+        //x:401-590 y:485-540
+        if(!that.started && !that.gameOver) {
+          that.started = true;
+          that.start();
+        } else if(!that.started && that.gameOver) {
+          that.gameOver = false;
+          that.titleScreen();
+          that.clearAll();
+          flipTheTable(that);
+
+        }
     }, false);
 
     console.log('Input started');
@@ -173,10 +159,32 @@ GameEngine.prototype.update = function () {
     }
 }
 
+GameEngine.prototype.clearAll = function() {
+  for (var i = this.entities.length - 1; i >= 0; --i) {
+      this.entities.splice(i, 1);
+  }
+}
+
 GameEngine.prototype.loop = function () {
       this.clockTick = this.timer.tick();
-      this.update();
-      this.draw();
+      if(!this.gameOver && this.started) {
+        this.update();
+        this.draw();
+      } else if(!this.started && !this.gameOver) {
+        this.ctx.drawImage(AM.getAsset("./img/title.png"),
+                       0, 0,  // source from sheet
+                       800, 800,
+                       0, 0,
+                       800, 800);
+      }else if(this.gameOver) {
+        this.ctx.drawImage(AM.getAsset("./img/gameover.png"),
+                       0, 0,  // source from sheet
+                       800, 800,
+                       0, 0,
+                       800, 800);
+      }
+
+
       // this.keyright = null;
       // this.keyleft = null;
       this.keyx = null;
