@@ -43,10 +43,9 @@ GameEngine.prototype.init = function (ctx) {
 }
 
 GameEngine.prototype.titleScreen = function() {
-  this.level_song.load();
-  this.win_song.unload();
-  this.gameover_song.unload();
-  this.title_song.load();
+  //this.level_song.stop();
+  this.win_song.stop();
+  this.gameover_song.stop();
   this.title_song.play();
   this.started = false;
 
@@ -54,17 +53,15 @@ GameEngine.prototype.titleScreen = function() {
 
 GameEngine.prototype.winScreen = function() {
   this.win = true;
-  this.level_song.unload();
-  this.win_song.load();
+  this.level_song.stop();
   this.win_song.play();
   this.started = false;
 }
 
 GameEngine.prototype.gameOverScreen = function() {
   this.gameOver = true;
-  this.boss_song.unload();
-  this.level_song.unload();
-  this.gameover_song.load();
+  this.boss_song.stop();
+  this.level_song.stop();
   this.gameover_song.play();
   this.started = false;
 }
