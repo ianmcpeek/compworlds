@@ -43,7 +43,7 @@ GameEngine.prototype.init = function (ctx) {
 }
 
 GameEngine.prototype.titleScreen = function() {
-  this.level_song.unload();
+  this.level_song.load();
   this.win_song.unload();
   this.gameover_song.unload();
   this.title_song.load();
