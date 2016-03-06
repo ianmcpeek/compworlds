@@ -14,14 +14,20 @@ Sandwich.prototype.update = function() {
   //check if went offscreen
   if(Entity.prototype.offScreen.call(this)) {
     this.removeFromWorld = true;
-    console.log("off screen sandwich!");
+    //console.log("off screen sandwich!");
   }
   //check if sandwich hit enemy
   for (var i = 0; i < this.game.entities.length; i++) {
       var ent = this.game.entities[i];
       if (this != ent && this.hit(ent)) {
         ent.health -= 1;
-        console.log("enemy hit, health: " + ent.health);
+        //check if slowdown powerup is active
+        if(this.game.hud.slowdown && !this.game.hud.tickSlowTimer()) {
+          this.game.hud.slowdown = false;
+        } else {
+          ent.slowEnemy();
+        }
+        //console.log("enemy hit, health: " + ent.health);
         this.hitSound.play();
         this.removeFromWorld = true;
       }
@@ -145,6 +151,11 @@ Bruno.prototype.update = function() {
       this.isIdle = false;}
 
     if(this.isThrowing) {
+        //check if fire powerup is finished
+        if(this.game.hud.fireup && !this.game.hud.tickFireTimer()) {
+          this.throwAnimation.resetFireUp();
+          this.game.hud.fireup = false;
+        }
         if(this.throwAnimation.currentFrame() === 3 && !this.thrown) {
           this.game.addEntity(new Sandwich(this.game, this.world, AM.getAsset("./img/sammy1.png"), this.worldX, this.worldY, this.isleft));
           this.thrown = true;
@@ -191,11 +202,12 @@ Bruno.prototype.update = function() {
 Bruno.prototype.updateXSpeed = function (dir) {
   var speedUp = 0; // set in relation to world speed
   if (this.speedTimer > 0) {
+    console.log("Speed Powerup timer: " + this.speedTimer);
     speedUp = this.speed / 2;
     this.speedTimer -= 1;
   }
   if(this.isCentered() && !this.world.locked) {
-    if(!this.world.locked) this.world.camera.x += (this.worldSpeed + (speedUp))*dir; //ratio of speed to world speed;
+    if(!this.world.locked) this.world.camera.x += (this.worldSpeed + (speedUp/4))*dir; //ratio of speed to world speed;
     this.worldX += (this.speed + (speedUp))*dir;
   } else {
     this.x += (this.speed + speedUp)*dir;

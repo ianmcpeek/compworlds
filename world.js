@@ -20,13 +20,26 @@ Background.prototype.draw = function (ctx) {
                200, 200,
                0, 0,  // source from sheet
                800, 800);
+
+   //check if boss is active
+   if(this.locked) {
+     var bossHealth = (697 / this.boss.totalHealth) * this.boss.health;
+     ctx.lineWidth = 3;
+     ctx.strokeRect(50,740,700,50);
+     ctx.font="30px Lobster";
+     ctx.fillText(this.boss.name, 50,720);
+     ctx.fillStyle = "red";
+     ctx.fillRect(52, 742, bossHealth, 47);
+   }
 };
 
-Background.prototype.lockScreen = function() {
+Background.prototype.lockScreen = function(boss) {
   if(!this.locked) {
     this.game.level_song.pause();
+    this.game.boss_song.load();
     this.game.boss_song.play();
     this.locked = true;
+    this.boss = boss;
   }
 
 };
@@ -34,8 +47,9 @@ Background.prototype.lockScreen = function() {
 Background.prototype.unlockScreen = function() {
   if(this.locked) {
     this.game.level_song.play();
-    this.game.boss_song.stop();
+    this.game.boss_song.unload();
     this.locked = false;
+    this.boss = null;
   }
 
 };
@@ -61,34 +75,54 @@ function Hud(game, spritesheet, brainz) {
   this.brainTotalHealth = brainz*4;
   this.game = game;
   this.ctx = game.ctx;
+
+  //powerups
+  this.fireup = false;
+  this.fireTimer = 0;
+
+  this.slowdown = false;
+  this.slowTimer = 0;
+
+  this.damagedown = false;
+  this.buffTimer = 0;
+
+  //boss screen
+  this.boss = null;
 };
 
 Hud.prototype.update = function() {
   //check if dead
   if(this.brainHealth < 1) this.game.gameOverScreen();
+  if(this.slowTimer > 0) this.slowTimer -= 1;
+  if(this.buffTimer > 0) this.buffTimer -= 1;
 };
 
 Hud.prototype.draw = function() {
     //console.log("Brain Health: " + this.brainHealth);
     this.ctx.save();
+    this.ctx.font="40px Lobster";
+    this.ctx.fillText("Brainpower", 20,60);
+    var y = 100;
+
     var wholeBrainz = Math.floor(this.brainHealth / 4);
     //draw whole brainz
     var brainX = 20;
     for(var i = 0; i < wholeBrainz; i++) {
-        this.brainImage.drawStill(this.ctx, 0, 0, brainX, 20);
+        this.brainImage.drawStill(this.ctx, 0, 0, brainX, y);
         brainX += 60;
     }
     //draw partial brain if any
     if(this.brainHealth % 4 > 0) {
-        this.brainImage.drawStill(this.ctx, 4 - (this.brainHealth % 4), 0, brainX, 20);
+        this.brainImage.drawStill(this.ctx, 4 - (this.brainHealth % 4), 0, brainX, y);
         brainX += 60;
     }
     //draw empty brainz
     var deadBrainz = Math.floor((this.brainTotalHealth - this.brainHealth)/4);
     for(var i = 0; i < deadBrainz; i++) {
-        this.brainImage.drawStill(this.ctx, 4, 0, brainX, 20);
+        this.brainImage.drawStill(this.ctx, 4, 0, brainX, y);
         brainX += 60;
     }
+
     this.ctx.restore();
 };
 
@@ -102,6 +136,28 @@ Hud.prototype.healthDown = function(health) {
   this.brainHealth -= health;
   if(this.brainHealth < 0)
       this.brainHealth = 0;
+}
+
+//powerup timers
+Hud.prototype.tickFireTimer = function(health) {
+  if(this.fireTimer > 0) {
+      //console.log("Fire Timer: " + this.fireTimer);
+      this.fireTimer -= 1;
+      return true;
+  } else return false;
+}
+
+Hud.prototype.tickSlowTimer = function(health) {
+  if(this.slowTimer > 0) {
+      console.log("Slow Timer: " + this.slowTimer);
+      this.slowTimer -= 1;
+      return true;
+  } else return false;
+}
+
+Hud.prototype.buffActive = function(health) {
+  if(this.buffTimer > 0) return true;
+  else return false;
 }
 
 

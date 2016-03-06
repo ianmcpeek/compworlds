@@ -12,11 +12,13 @@ window.requestAnimFrame = (function () {
 function GameEngine() {
     this.entities = [];
     this.platforms = [];
+    this.popups = [];
     this.player = null;
     this.hud = null;
     this.ctx = null;
     this.debug = false;
     this.gameOver = false;
+    this.win = false;
     this.surfaceWidth = null;
     this.surfaceHeight = null;
 }
@@ -29,7 +31,8 @@ GameEngine.prototype.init = function (ctx) {
     this.title_song = new Howl({urls: ["./sounds/hotlinebling.mp3"], loop: true});
     this.level_song = new Howl({urls: ["./sounds/codemonkey.mp3"], loop: true});
     this.boss_song = new Howl({urls: ["./sounds/xgon'giveittoyou.mp3"], loop: true});
-    this.gameover_song = new Howl({urls: ["./sounds/hello.mp3"], loop: false});
+    this.gameover_song = new Howl({urls: ["./sounds/hello.mp3"], loop: true});
+    this.win_song = new Howl({urls: ["./sounds/earnedit.mp3"], loop:true});
     console.log('game initialized');
     this.startInput();
     var that = this;
@@ -40,18 +43,29 @@ GameEngine.prototype.init = function (ctx) {
 }
 
 GameEngine.prototype.titleScreen = function() {
-  this.gameover_song.stop();
+  this.level_song.unload();
+  this.win_song.unload();
+  this.gameover_song.unload();
+  this.title_song.load();
   this.title_song.play();
   this.started = false;
 
 }
 
+GameEngine.prototype.winScreen = function() {
+  this.win = true;
+  this.level_song.unload();
+  this.win_song.load();
+  this.win_song.play();
+  this.started = false;
+}
+
 GameEngine.prototype.gameOverScreen = function() {
   this.gameOver = true;
-  this.level_song.stop();
-  this.boss_song.stop();
+  this.boss_song.unload();
+  this.level_song.unload();
+  this.gameover_song.load();
   this.gameover_song.play();
-  this.ctx.clearRect(0, 0, 800, 800);
   this.started = false;
 }
 
@@ -59,7 +73,8 @@ GameEngine.prototype.start = function () {
     console.log("starting game");
 
     //start level song
-    this.title_song.stop();
+    this.title_song.unload();
+    this.level_song.load();
     this.level_song.play();
 }
 
@@ -85,11 +100,12 @@ GameEngine.prototype.startInput = function () {
 
     this.ctx.canvas.addEventListener("mousedown", function (e) {
         //x:401-590 y:485-540
-        if(!that.started && !that.gameOver) {
+        if(!that.started && !that.gameOver && !that.win) {
           that.started = true;
           that.start();
-        } else if(!that.started && that.gameOver) {
+        } else if(!that.started && (that.gameOver || that.win)) {
           that.gameOver = false;
+          that.win = false;
           that.titleScreen();
           that.clearAll();
           flipTheTable(that);
@@ -120,6 +136,10 @@ GameEngine.prototype.addPlatform = function (platform) {
     this.platforms.push(platform);
 }
 
+GameEngine.prototype.addPopup = function (popup) {
+    this.popups.push(popup);
+}
+
 GameEngine.prototype.draw = function () {
     this.ctx.clearRect(0, 0, this.surfaceWidth, this.surfaceHeight);
     this.ctx.save();
@@ -134,6 +154,10 @@ GameEngine.prototype.draw = function () {
 
     if(this.player) this.player.draw(this.ctx);
     if(this.hud) this.hud.draw(this.ctx);
+
+    for (var i = 0; i < this.popups.length; i++) {
+        this.popups[i].draw(this.ctx);
+    }
 
     this.ctx.restore();
 }
@@ -157,21 +181,42 @@ GameEngine.prototype.update = function () {
             this.entities.splice(i, 1);
         }
     }
+
+    for (var i = this.popups.length - 1; i >= 0; --i) {
+        if (this.popups[i].removeFromWorld) {
+            this.popups.splice(i, 1);
+        } else this.popups[i].update();
+    }
 }
 
 GameEngine.prototype.clearAll = function() {
   for (var i = this.entities.length - 1; i >= 0; --i) {
       this.entities.splice(i, 1);
   }
+
+  for (var i = this.platforms.length - 1; i >= 0; --i) {
+      this.platforms.splice(i, 1);
+  }
+
+  this.player = null;
+  this.hud = null;
+
+  this.popups = [];
 }
 
 GameEngine.prototype.loop = function () {
       this.clockTick = this.timer.tick();
-      if(!this.gameOver && this.started) {
+      if(!this.gameOver && this.started && !this.win) {
         this.update();
         this.draw();
-      } else if(!this.started && !this.gameOver) {
+      } else if(!this.started && !this.gameOver && !this.win) {
         this.ctx.drawImage(AM.getAsset("./img/title.png"),
+                       0, 0,  // source from sheet
+                       800, 800,
+                       0, 0,
+                       800, 800);
+      } else if(this.win) {
+        this.ctx.drawImage(AM.getAsset("./img/level_win.png"),
                        0, 0,  // source from sheet
                        800, 800,
                        0, 0,

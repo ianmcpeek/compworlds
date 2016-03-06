@@ -3,15 +3,17 @@ function Enemy(game, world, animation, x, y, radius, stats, isleft) {
     this.animation = animation;
     this.isleft = isleft;
     this.isIdle = false;
+    this.deathsound = new Howl({urls: ["./sounds/effects/ohyeah.wav"], loop: false});
     this.enemyTypes = ["pug", "student", "teacher", "miniboss", "boss"];
     this.enemyType = stats.t;
     this.health = stats.h;//later added as parameter
     this.damage = stats.d
     this.ground = y; //used for jump reference
     this.timer = 50;
-
+    //used for slowing
+    this.slowed = false;
     this.slowTimer = 0;
-    this.speed; //added as parameter later
+    this.speed = stats.s; //added as parameter later
 
     Entity.call(this, game, world, x, y, radius, 1);
     this.ctx = game.ctx;
@@ -32,6 +34,15 @@ Enemy.prototype = new Entity();
 Enemy.prototype.constructor = Enemy;
 
 Enemy.prototype.update = function () {
+  //slow down enemy on powerup
+  if(this.slowed) {
+    if(this.slowTimer > 0) {
+      this.slowTimer -= 1;
+    } else {
+      this.speed = this.speed * 2;
+      this.slowed = false;
+    }
+  }
 
 
   if(Entity.prototype.offScreen.call(this)) {
@@ -54,14 +65,18 @@ Enemy.prototype.update = function () {
     } else {
       if(this.collide(this.game.player)) {
         console.log("collided with player");
-        this.game.hud.healthDown(this.damage);
+        var damagedown = this.game.hud.buffActive() ? Math.floor(this.damage/2) : this.damage;
+        this.game.hud.healthDown(damagedown);
         this.timer = 50;
       }
     }
     if(this.health < 1) {
       this.removeFromWorld = true;
-      if(this.enemyTypes[this.enemyType] == "miniboss" || this.enemyTypes[this.enemyType] == "boss")
+      this.deathsound.play();
+      if(this.enemyTypes[this.enemyType] == "miniboss" || this.enemyTypes[this.enemyType] == "boss") {
           this.world.unlockScreen();
+          if (this.enemyTypes[this.enemyType] == "boss") this.game.winScreen();
+      }
     }
     Entity.prototype.update.call(this);
     this.visible = true;
@@ -98,7 +113,7 @@ Enemy.prototype.collide = function (ent) {
 };
 
 Enemy.prototype.pugUpdate = function() {
-  this.x -= 4;
+  this.x -= this.speed;
 }
 
 Enemy.prototype.studentUpdate = function() {
@@ -110,7 +125,7 @@ Enemy.prototype.studentUpdate = function() {
   }
   if(this.walkTimer > 0) {
     var dir = this.isleft ? -1 : 1;
-    this.x += 2*dir;
+    this.x += this.speed*dir;
     this.walkTimer -= 1;
   } else if(this.idleTimer > 0) {
     this.idleTimer -= 1;
@@ -133,7 +148,7 @@ Enemy.prototype.teacherUpdate = function() {
 
   if(this.jumpTimer > 0 && !this.jumping) {
     this.jumpTimer -= 1;
-    this.x += 1 * dir;
+    this.x += this.speed * dir;
   } else if(!this.jumping) {
     this.jumping = true;
     this.jumpTimer = 200;
@@ -143,6 +158,8 @@ Enemy.prototype.teacherUpdate = function() {
 
 /* MINIBOSS FUNCTIONS*/
 Enemy.prototype.minibossInit = function() {
+  this.name = "Jerry the T.A.";
+  this.totalHealth = this.health;
   this.shootTimer = 100;
   this.jumpTimer = 200;
   this.jumping = false;
@@ -150,7 +167,7 @@ Enemy.prototype.minibossInit = function() {
 }
 
 Enemy.prototype.minibossUpdate = function() {
-  if(this.x + this.radius*2 - this.game.player.worldX < 400)this.world.lockScreen();
+  if(this.x + this.radius*2 - this.game.player.worldX < 400)this.world.lockScreen(this);
 
   if(this.jumpTimer > 0 && !this.jumping) {
     this.jumpTimer -= 1;
@@ -188,6 +205,8 @@ Enemy.prototype.minibossUpdate = function() {
 
 /* PROFESSOR GROWLER FUNCTIONS */
 Enemy.prototype.bossInit = function() {
+  this.name = "Professor Growler";
+  this.totalHealth = this.health;
   this.shootTimer = 100;
   this.shooting = false;
   this.jumpTimer = 200;
@@ -198,7 +217,7 @@ Enemy.prototype.bossInit = function() {
 }
 
 Enemy.prototype.bossUpdate = function() {
-  if(this.x + this.radius*2 - this.game.player.worldX < 400) this.world.lockScreen();
+  if(this.x + this.radius*2 - this.game.player.worldX < 400) this.world.lockScreen(this);
 
   if(this.jumpTimer > 0 && !this.jumping) {
     this.jumpTimer -= 1;
@@ -210,13 +229,14 @@ Enemy.prototype.bossUpdate = function() {
   } else if(!this.jumping && !this.shooting) {
     this.jumping = true;
     this.jumpTimer = 200;
+    this.speed = Math.floor((Math.random() * 6) + 1);
   }
   this.jump(500);
   if(this.jumping) {
     if(!this.isleft) {
-      if(!this.world.collideRightWall(this, 6)) this.x += 6;
+      if(!this.world.collideRightWall(this, this.speed)) this.x += this.speed;
     } else {
-      if(!this.world.collideLeftWall(this, 6)) this.x += -6;
+      if(!this.world.collideLeftWall(this, this.speed)) this.x += -this.speed;
     }
   }
 
@@ -268,7 +288,8 @@ Projectile.prototype.update = function() {
   }
   //check if projectile hit player
   if (this.hit(this.game.player)) {
-    this.game.hud.healthDown(this.damage);
+    var damagedown = this.game.hud.buffActive() ? Math.floor(this.damage/2) : this.damage;
+    this.game.hud.healthDown(damagedown);
     this.removeFromWorld = true;
   }
 
@@ -312,10 +333,12 @@ Enemy.prototype.updateXSpeed = function () {
 }
 
 Enemy.prototype.jump = function (totalHeight) {
+  if(!this.maxHeight) this.maxHeight = totalHeight;
   if(this.jumping) {
     if (this.jumpAnimation.isDone()) {
         this.jumpAnimation.elapsedTime = 0;
         this.jumping = false;
+        this.maxHeight = totalHeight;
     }
     var jumpDistance = this.jumpAnimation.elapsedTime / this.jumpAnimation.totalTime;
 
@@ -323,7 +346,15 @@ Enemy.prototype.jump = function (totalHeight) {
         jumpDistance = 1 - jumpDistance;
 
     //var height = jumpDistance * 2 * totalHeight;
-    var height = totalHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
+
+    //check for collisions
+    var collidedBottom = false;
+    for(var i = 0; i < this.game.platforms.length; i++) {
+      var platform = this.game.platforms[i];
+      if(platform.collideBottom(this)) collidedBottom = true;
+    }
+    if(collidedBottom) this.maxHeight = this.y;
+    var height = this.maxHeight*(-4 * (jumpDistance * jumpDistance - jumpDistance));
     this.y = this.ground - height;
   }
 }
@@ -331,4 +362,12 @@ Enemy.prototype.jump = function (totalHeight) {
 Enemy.prototype.runToPlayer = function() {
   if(this.game.player.worldX < this.x) return -1;
   else return 1;
+}
+
+Enemy.prototype.slowEnemy = function() {
+  if(!this.slowed) {
+    this.slowTimer = 80;
+    this.speed = this.speed /2;
+    this.slowed = true;
+  }
 }

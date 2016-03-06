@@ -2,6 +2,7 @@ var AM = new AssetManager();
 
 AM.queueDownload("./img/title.png");
 AM.queueDownload("./img/gameover.png");
+AM.queueDownload("./img/level_win.png");
 
 AM.queueDownload("./img/castlevania_background.png");
 AM.queueDownload("./img/bruno.png");
@@ -48,11 +49,11 @@ var flipTheTable = function(gameEngine) {
   gameEngine.addPlayer(new Bruno(gameEngine, AM.getAsset("./img/bruno.png"), background));
   gameEngine.addHud(new Hud(gameEngine, AM.getAsset("./img/brainz.png"), 3));
 
-  var sStats = {d:1, h:3, t:1};
-  var tStats = {d:1, h:5, t:2};
-  var pStats = {d:3, h:1, t:0};
-  var mStats = {d:2, h:10, t:3};
-  var bStats = {d:2, h:20, t:4};
+  var sStats = {d:1, h:3, t:1, s:2};
+  var tStats = {d:2, h:5, t:2, s:1};
+  var pStats = {d:3, h:1, t:0, s:4};
+  var mStats = {d:2, h:10, t:3, s:0};
+  var bStats = {d:3, h:20, t:4, s:0};
 
   //enemies
   gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/student.png"), 0, 0, 39, 64, 0.2, 6, true), 1000, 700, 20, sStats, true));
@@ -63,27 +64,33 @@ var flipTheTable = function(gameEngine) {
   gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/student.png"), 0, 0, 39, 64, 0.2, 6, true), 6454, 297, 20, sStats, true));
 
   gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/teacher.png"), 0, 0, 90, 105, 0.2, 4, true), 3490, 650, 45, tStats, true));
+  gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/teacher.png"), 0, 0, 90, 105, 0.2, 4, true), 4958, 650, 45, {d:2, h:7, t:2, s:3}, true));
+  gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/teacher.png"), 0, 0, 90, 105, 0.2, 4, true), 6510, 650, 45, tStats, true));
   //this.animation = new Animation(ASSET_MANAGER.getAsset("./img/teacher.png"), 0, 0, 90, 105, 0.2, 4, true, true);
 
   gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/pug.png"), 0, 0, 80, 62, 0.2, 5, true), 2742, 500, 40, pStats, false));
   gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/pug.png"), 0, 0, 80, 62, 0.2, 5, true), 4054, 500, 40, pStats, false));
+  gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/pug.png"), 0, 0, 80, 62, 0.2, 5, true), 5000, 500, 40, pStats, false));
   gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/pug.png"), 0, 0, 80, 62, 0.2, 5, true), 6954, 500, 40, pStats, false));
 
   gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/mini-boss.png"), 653, 3.5, 135, 153, 0.31, 5, true), 4586, 600, 76, mStats, false));
   gameEngine.addEntity(new Enemy(gameEngine, background, new Animation(AM.getAsset("./img/professor_growler.png"), 0, 0, 160, 160, 0.5, 3, true), 8000, 600, 80, bStats, true));
 
   //items
-  // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/avocado.png"), 0));
+  gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/avocado.png"), 4742, 600, 2));
   // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/bacon.png"), 40));
-  gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/beans.png"), 4958));
-  gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/bottle.png"), 400));
+  gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/beans.png"), 7000, 600, 5));
+  gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/bottle.png"), 400, 600, 1));
+  gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/bottle.png"), 5834, 340, 1));
   // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/bread.png"), 160));
-  gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/carrot.png"), 6338));
+  gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/carrot.png"), 6338, 600, 0));
+  gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/carrot.png"), 5354, 600, 0));
   // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/cheese.png"), 250));
   // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/ham.png"), 290));
-  gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/ketchup.png"), 3222));
+  gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/ketchup.png"), 3222, 600, 3));
   // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/mayo.png"), 370));
-  // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/mustard.png"), 410));
+  gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/mustard.png"), 1506, 600, 4));
+  gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/mustard.png"), 6354, 211, 4));
   // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/paper.png"), 450));
   // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/pepper.png"), 490));
   // gameEngine.addEntity(new Item(gameEngine, background, AM.getAsset("./img/tomato.png"), 530));
@@ -109,6 +116,16 @@ function Animation(spriteSheet, startX, startY, frameWidth, frameHeight, frameDu
     this.totalTime = frameDuration * frames;
     this.elapsedTime = 0;
     this.loop = loop;
+}
+
+Animation.prototype.setFireUp = function() {
+  this.frameDuration = this.frameDuration / 2;
+  this.totalTime = this.frameDuration * this.frames;
+}
+
+Animation.prototype.resetFireUp = function() {
+  this.frameDuration = this.frameDuration * 2;
+  this.totalTime = this.frameDuration * this.frames;
 }
 
 Animation.prototype.drawStill = function (ctx, xindex, yindex, x, y, direction) {
