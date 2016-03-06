@@ -44,8 +44,8 @@ GameEngine.prototype.init = function (ctx) {
 
 GameEngine.prototype.titleScreen = function() {
   //this.level_song.stop();
-  this.win_song.stop();
-  this.gameover_song.stop();
+  this.win_song.unload();
+  this.gameover_song.unload();
   this.title_song.play();
   this.started = false;
 
@@ -60,8 +60,7 @@ GameEngine.prototype.winScreen = function() {
 
 GameEngine.prototype.gameOverScreen = function() {
   this.gameOver = true;
-  this.boss_song.stop();
-  this.level_song.stop();
+  this.level_song.unload();
   this.gameover_song.play();
   this.started = false;
 }

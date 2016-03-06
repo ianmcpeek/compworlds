@@ -46,7 +46,7 @@ Background.prototype.lockScreen = function(boss) {
 Background.prototype.unlockScreen = function() {
   if(this.locked) {
     this.game.level_song.play();
-    this.game.boss_song.stop();
+    this.game.boss_song.unload();
     this.locked = false;
     this.boss = null;
   }
@@ -99,7 +99,8 @@ Hud.prototype.update = function() {
 Hud.prototype.draw = function() {
     //console.log("Brain Health: " + this.brainHealth);
     this.ctx.save();
-    this.ctx.font="40px Lobster";
+    this.ctx.fillStyle = "black";
+    this.ctx.font="40px Indie Flower";
     this.ctx.fillText("Brainpower", 20,60);
     var y = 100;
 
