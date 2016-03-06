@@ -35,7 +35,7 @@ Background.prototype.draw = function (ctx) {
 
 Background.prototype.lockScreen = function(boss) {
   if(!this.locked) {
-    this.game.level_song.pause();
+    this.game.level_song.unload();
     this.game.boss_song.play();
     this.locked = true;
     this.boss = boss;
