@@ -46,6 +46,7 @@ GameEngine.prototype.titleScreen = function() {
   //this.level_song.stop();
   this.win_song.unload();
   this.gameover_song.unload();
+  this.level_song.load();
   this.title_song.play();
   this.started = false;
 
@@ -53,7 +54,7 @@ GameEngine.prototype.titleScreen = function() {
 
 GameEngine.prototype.winScreen = function() {
   this.win = true;
-  this.level_song.load();
+  this.level_song.unload();
   this.win_song.play();
   this.started = false;
 }
@@ -61,7 +62,7 @@ GameEngine.prototype.winScreen = function() {
 GameEngine.prototype.gameOverScreen = function() {
   this.gameOver = true;
   this.boss_song.unload()
-  this.level_song.load();
+  this.level_song.unload();
   this.gameover_song.play();
   this.started = false;
 }
