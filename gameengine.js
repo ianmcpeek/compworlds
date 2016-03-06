@@ -60,6 +60,7 @@ GameEngine.prototype.winScreen = function() {
 
 GameEngine.prototype.gameOverScreen = function() {
   this.gameOver = true;
+  this.boss_song.unload();
   this.level_song.unload();
   this.gameover_song.play();
   this.started = false;
