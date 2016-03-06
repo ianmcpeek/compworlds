@@ -28,11 +28,11 @@ GameEngine.prototype.init = function (ctx) {
     this.surfaceWidth = this.ctx.canvas.width;
     this.surfaceHeight = this.ctx.canvas.height;
     this.timer = new Timer();
-    this.title_song = new Howl({urls: ["./sounds/hotlinebling.mp3"], loop: true});
-    this.level_song = new Howl({urls: ["./sounds/codemonkey.mp3"], loop: true});
-    this.boss_song = new Howl({urls: ["./sounds/xgon'giveittoyou.mp3"], loop: true});
-    this.gameover_song = new Howl({urls: ["./sounds/hello.mp3"], loop: true});
-    this.win_song = new Howl({urls: ["./sounds/earnedit.mp3"], loop:true});
+    this.title_song = new Howl({urls: ["./sounds/hotlinebling.mp3"], loop: true, buffer: true});
+    this.level_song = new Howl({urls: ["./sounds/codemonkey.mp3"], loop: true, buffer: true});
+    this.boss_song = new Howl({urls: ["./sounds/xgon'giveittoyou.mp3"], loop: true, buffer: true});
+    this.gameover_song = new Howl({urls: ["./sounds/hello.mp3"], loop: true, buffer: true});
+    this.win_song = new Howl({urls: ["./sounds/earnedit.mp3"], loop:true, buffer: true});
     console.log('game initialized');
     this.startInput();
     var that = this;
